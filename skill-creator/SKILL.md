@@ -54,6 +54,16 @@ metadata:
 - 根据设计思路开始实现skill工程的设计
 - 如果设计思路中**有脚本文件**，则需要在scripts/目录下创建对应的脚本文件，文件内容要符合skill的要求。且需要验证脚本文件通过应用测试，如果没有办法通过测试，停止设计并输出失败结论
 - 最终完成设计的地址保存在`metadata.skill_storage_path`
+- **SKILL.md 格式检查（强制性）**：创建完成后必须检查以下内容：
+  - [ ] 文件开头没有 BOM 字符（UTF-8 字节顺序标记）
+  - [ ] frontmatter 格式正确：`---` 开头和结尾，无多余空格
+  - [ ] `name` 字段与目录名完全一致
+  - [ ] `description` 字段不为空且长度在 1-1024 字符
+  - [ ] 正文内容不为空
+- **最终验证（强制性）**：
+  - [ ] 使用 `Read` 工具读取 SKILL.md 前 10 行，确认 frontmatter 解析正常
+  - [ ] 使用 `Glob` 工具列出技能目录下所有文件，确认文件结构完整
+  - [ ] 告知用户"技能已创建完成，建议重启应用以加载新技能"
 - 最终完成后要重新验证一整个流程，输出测试结果
 
 ### 4.对话封装场景的特殊处理
@@ -94,6 +104,35 @@ compatibility:选填，1-500字符；仅当技能有特殊环境要求时填写(
 metadata:选填，自定义键值对，键名建议唯一(避免冲突),可存储作者、版本、依赖等信息。
 ---
 Markdown正文(技能指令)
+```
+
+### SKILL.md 格式检查清单（创建后必须执行）
+
+在创建完 SKILL.md 后，必须按照以下清单进行检查：
+
+| 检查项 | 检查方法 | 通过标准 |
+|--------|----------|----------|
+| **无 BOM 字符** | 使用 Python 读取文件前3个字节 | 不是 `0xEF 0xBB 0xBF` |
+| **frontmatter 格式** | 检查文件开头和结尾 | 以 `---\n` 开头，第二个 `---\n` 结束 |
+| **name 字段** | 检查 frontmatter 中的 name | 与目录名完全一致，小写字母+数字+连字符 |
+| **description 字段** | 检查 frontmatter 中的 description | 不为空，长度 1-1024 字符 |
+| **正文内容** | 检查第二个 `---` 之后 | 有非空内容 |
+
+**验证方法**：
+```python
+# 检查 BOM
+with open('SKILL.md', 'rb') as f:
+    if f.read(3) == b'\xef\xbb\xbf':
+        raise Exception('BOM detected!')
+
+# 检查 frontmatter
+with open('SKILL.md', 'r', encoding='utf-8') as f:
+    content = f.read()
+    if not content.startswith('---\n'):
+        raise Exception('Invalid frontmatter start!')
+    if '\n---\n' not in content:
+        raise Exception('Invalid frontmatter end!')
+```
 正文无强制格式限制，核心作用是为智能体提供清晰的操作指引，建议结构化呈现以下内容：
  -分步执行说明(按操作逻辑排序);
  -输入/输出示例(明确预期格式);

@@ -1,13 +1,13 @@
 # AWENAI-TOOL
 
 <p align="center">
-  <strong>面向 Trae IDE 的 AI 智能体团队与技能工具集</strong><br>
+  <strong>AI 智能体团队配置方案与技能工具集</strong><br>
   <em>让 AI 按专业流程工作，而不是凭感觉回答。</em>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT">
-  <img src="https://img.shields.io/badge/platform-Trae%20IDE-6C5CE7" alt="Platform: Trae IDE">
+  <img src="https://img.shields.io/badge/platform-通用-6C5CE7" alt="Platform: Universal">
   <img src="https://img.shields.io/badge/agents-20+-orange" alt="Agents: 20+">
   <img src="https://img.shields.io/badge/skills-80+-green" alt="Skills: 80+">
 </p>
@@ -16,7 +16,7 @@
 
 ## 项目简介
 
-**AWENAI-TOOL** 是一套为 Trae IDE 构建的 **AI 智能体（Agent）配置库**和 **AI 技能（Skill）工具箱**。它不是一个传统意义上的"软件工程"项目——没有可编译的代码，没有运行时依赖。它的核心产物是：
+**AWENAI-TOOL** 是一套通用的 **AI 智能体（Agent）配置库**和 **AI 技能（Skill）工具箱**。它不是一个传统意义上的"软件工程"项目——没有可编译的代码，没有运行时依赖。它的核心产物是：
 
 - **智能体规则文件**（`.md` / `.yaml`）：定义 AI 角色的身份、工作流、交付物标准和质检标准
 - **技能模块**（`SKILL.md`）：封装可复用的 AI 能力，按方法论执行而非凭直觉回答
@@ -199,16 +199,16 @@ AWENAI-TOOL/
 
 ## 使用方式
 
-### 前置条件
+### 前提条件
 
-- 安装 [Trae IDE](https://trae.ai)（支持 Agent 和 Rules 体系）
+- 安装支持智能体（Agent）和规则（Rules）体系的大型语言模型工具（如 Trae IDE、Cursor 等）
 - 将本项目克隆到本地
 
 ### 如何调用智能体
 
-**方式一：通过 Agent 入口（推荐）**
+**方式一：通过 Agent 入口**
 
-在 Trae IDE 中，使用 `@Agent名称` 调用智能体：
+在支持智能体的工具中，使用 `@Agent名称` 调用智能体：
 
 ```
 @ProjectExpert 我想了解一下 LangChain 这个项目
@@ -224,7 +224,7 @@ Use Skill: intent-recognition
 
 ### 文件格式说明
 
-智能体规则文件采用 **YAML Front Matter + Markdown** 格式：
+智能体规则文件采用 **YAML Front Matter + Markdown** 格式，遵循通用约定：
 
 ```yaml
 ---

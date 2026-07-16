@@ -1,0 +1,347 @@
+# 通用任务路由规则
+# router 根据这些规则把用户输入映射到具体 agent
+# 规则按优先级匹配,先匹配先生效
+
+version: "1.0"
+updated: "2026-07-16"
+
+# 全局默认规则
+defaults:
+  fallback_agents: [core-orchestrator]  # 不匹配任何规则时,转交主控
+  min_confidence: 0.6  # 低于此置信度主动询问用户
+  max_agents_per_task: 6  # 单次任务最多调度的 agent 数
+
+rules:
+
+  # ============ 软件开发类 ============
+  - id: software-dev
+    name: 软件开发
+    keywords:
+      - 开发
+      - 编程
+      - 写代码
+      - 实现
+      - 软件
+      - 小工具
+      - app
+      - 应用
+      - 工具
+      - 系统
+      - 网站
+      - 平台
+    patterns:
+      - "做一个.*?(工具|系统|应用|app|平台)"
+      - "开发.*?(功能|模块|接口)"
+      - "写.*?(代码|程序|脚本)"
+    primary_agents:
+      - tech-architect       # 架构设计
+      - product-pm           # PRD + 需求
+    parallel_agents:
+      - tech-backend-dev
+      - tech-frontend-dev
+      - tech-mobile-dev
+      - tech-devops
+    workflow: software-dev
+    confidence_boost: 0.3
+
+  - id: frontend-dev
+    name: 前端开发
+    keywords:
+      - 前端
+      - 页面
+      - UI
+      - 界面
+      - 组件
+      - react
+      - vue
+      - 样式
+    primary_agents: [tech-frontend-dev]
+    confidence_boost: 0.4
+
+  - id: backend-dev
+    name: 后端开发
+    keywords:
+      - 后端
+      - 接口
+      - API
+      - 数据库
+      - 服务端
+      - python
+      - node
+      - go
+    primary_agents: [tech-backend-dev, tech-architect]
+    confidence_boost: 0.4
+
+  - id: mobile-dev
+    name: 移动端开发
+    keywords:
+      - 移动端
+      - iOS
+      - Android
+      - 小程序
+      - 公众号
+      - 鸿蒙
+    primary_agents: [tech-mobile-dev]
+    confidence_boost: 0.5
+
+  - id: devops-deploy
+    name: 部署运维
+    keywords:
+      - 部署
+      - 上线
+      - CI/CD
+      - 运维
+      - 监控
+      - docker
+      - k8s
+    primary_agents: [tech-devops]
+    confidence_boost: 0.5
+
+  - id: testing-qa
+    name: 测试
+    keywords:
+      - 测试
+      - 自动化测试
+      - 性能测试
+      - bug
+      - 质量
+    primary_agents: [tech-qa]
+    confidence_boost: 0.4
+
+  # ============ 调研分析类 ============
+  - id: research-general
+    name: 通用调研
+    keywords:
+      - 调研
+      - 研究
+      - 分析
+      - 看看
+      - 了解一下
+      - 收集资料
+    primary_agents: [research-analyst]
+    confidence_boost: 0.3
+
+  - id: market-research
+    name: 市场调研
+    keywords:
+      - 市场
+      - 行业
+      - 规模
+      - TAM
+      - SAM
+      - 趋势
+      - 用户画像
+    primary_agents: [research-market, research-analyst]
+    confidence_boost: 0.4
+
+  - id: competitor-analysis
+    name: 竞品分析
+    keywords:
+      - 竞品
+      - 对手
+      - 比较
+      - 对标
+      - 差异化
+    primary_agents: [research-competitor]
+    confidence_boost: 0.5
+
+  # ============ 战略规划类 ============
+  - id: strategy-planning
+    name: 战略规划
+    keywords:
+      - 战略
+      - 规划
+      - 商业模式
+      - 竞争格局
+      - 五力
+      - PEST
+    primary_agents: [strategy-analyst]
+    confidence_boost: 0.4
+
+  - id: startup-validation
+    name: 创业验证
+    keywords:
+      - 创业
+      - 立项
+      - 验证
+      - 假设
+      - MVP
+      - 从0到1
+    primary_agents: [strategy-opc, product-pm]
+    workflow: bp-planning
+    confidence_boost: 0.5
+
+  - id: bp-writing
+    name: 商业计划书
+    keywords:
+      - BP
+      - 商业计划书
+      - 融资计划
+      - 路演
+    primary_agents: [director-bp, strategy-opc]
+    workflow: bp-planning
+    confidence_boost: 0.5
+
+  # ============ 产品类 ============
+  - id: product-prd
+    name: PRD 撰写
+    keywords:
+      - PRD
+      - 产品需求
+      - 需求文档
+      - 功能列表
+      - 用户故事
+    primary_agents: [product-pm]
+    confidence_boost: 0.5
+
+  - id: product-roadmap
+    name: 产品路线图
+    keywords:
+      - 路线图
+      - roadmap
+      - 迭代计划
+      - 版本规划
+    primary_agents: [product-pm, product-director]
+    confidence_boost: 0.5
+
+  - id: mvp-design
+    name: MVP 设计
+    keywords:
+      - MVP
+      - 最小可行
+      - 原型
+      - 验证方案
+    primary_agents: [product-mvp-designer, product-pm]
+    confidence_boost: 0.4
+
+  # ============ 营销类 ============
+  - id: marketing-strategy
+    name: 营销策略
+    keywords:
+      - 营销
+      - 推广
+      - 获客
+      - 增长
+      - 拉新
+      - 转化
+    primary_agents: [marketing-growth-hacker]
+    workflow: marketing-campaign
+    confidence_boost: 0.4
+
+  - id: content-writing
+    name: 内容创作
+    keywords:
+      - 写文案
+      - 写文章
+      - 脚本
+      - 软文
+      - 推文
+      - 视频脚本
+      - 公众号文章
+    primary_agents: [marketing-content-creator]
+    confidence_boost: 0.4
+
+  - id: social-media-ops
+    name: 社交媒体运营
+    keywords:
+      - 小红书
+      - 抖音
+      - 微博
+      - 视频号
+      - 短视频
+      - 自媒体
+    primary_agents: [marketing-social-media]
+    confidence_boost: 0.5
+
+  - id: ecommerce-ops
+    name: 电商运营
+    keywords:
+      - 电商
+      - 淘宝
+      - 天猫
+      - 京东
+      - 拼多多
+      - 直播带货
+      - shopify
+    primary_agents: [marketing-ecommerce]
+    confidence_boost: 0.5
+
+  - id: private-domain
+    name: 私域运营
+    keywords:
+      - 私域
+      - 社群
+      - 微信群
+      - 朋友圈
+      - 用户留存
+    primary_agents: [marketing-private-domain]
+    confidence_boost: 0.5
+
+  # ============ 财务类 ============
+  - id: finance-model
+    name: 财务建模
+    keywords:
+      - 财务
+      - 预算
+      - 成本
+      - 收入预测
+      - 现金流
+      - 盈亏平衡
+      - LTV
+      - CAC
+    primary_agents: [finance-financial-analyst]
+    confidence_boost: 0.5
+
+  - id: fundraising
+    name: 融资
+    keywords:
+      - 融资
+      - 估值
+      - 投资人
+      - 路演
+      - 股权融资
+      - 天使轮
+      - A轮
+    primary_agents: [finance-fundraising]
+    confidence_boost: 0.5
+
+  # ============ 组织类 ============
+  - id: org-design
+    name: 组织架构
+    keywords:
+      - 组织架构
+      - 股权设计
+      - 团队结构
+      - 治理
+    primary_agents: [org-architect]
+    confidence_boost: 0.5
+
+  - id: hiring
+    name: 招聘
+    keywords:
+      - 招聘
+      - 招人
+      - JD
+      - 人才
+      - 面试
+    primary_agents: [org-talent-planner]
+    confidence_boost: 0.4
+
+  # ============ 风险类 ============
+  - id: risk-analysis
+    name: 风险评估
+    keywords:
+      - 风险
+      - 合规
+      - 法律
+      - 政策
+      - 监管
+    primary_agents: [risk-manager]
+    confidence_boost: 0.4
+
+# 多意图合并规则: 当用户输入同时匹配多个规则时
+multi_intent:
+  # 例如"开发一个工具并做市场调研"
+  strategy: parallel  # 默认并行执行
+  max_parallel_rules: 4
+  merge_via: core-aggregator

@@ -3,6 +3,8 @@ name: 组织架构师
 description: 专注于创业团队架构设计、岗位规划、股权分配和公司治理的专业智能体，帮助创业者搭建高效、合规的组织体系
 emoji: 🏗️
 color: #6366F1
+agent_id: org-architect
+capabilities: [org-design, equity, governance, structure, role-definition]
 ---
 
 # 组织架构师 (Organization Architect)

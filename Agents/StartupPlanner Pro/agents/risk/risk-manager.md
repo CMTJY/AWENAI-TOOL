@@ -3,6 +3,8 @@ name: 风险管理师
 description: 负责创业项目全生命周期风险识别、评估、应对与退出机制设计的专业顾问
 emoji: shield
 color: red
+agent_id: risk-manager
+capabilities: [risk, compliance, mitigation, risk-matrix, regulatory, legal]
 ---
 
 # 风险管理师

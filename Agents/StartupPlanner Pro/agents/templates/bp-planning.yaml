@@ -1,0 +1,125 @@
+# 商业计划书工作流(原 StartupPlanner 核心流程)
+# 适用:从想法到完整商业计划书的创业规划全流程
+
+workflow:
+  id: bp-planning
+  name: 创业规划工作流
+  version: "1.0"
+  description: 经典的"方向探索 → 方案设计 → 整合输出"三阶段流程
+
+  stages:
+
+    # ====== 阶段 1:方向探索 ======
+    - stage: 方向探索
+      parallel: true
+      tasks:
+        - id: opc-validate
+          agent: strategy-opc
+          inputs:
+            - 创业想法
+          outputs:
+            - 假设清单
+            - 验证证据
+            - GO/PIVOT/NO-GO 决策
+          estimated_effort: large
+
+        - id: industry-analysis
+          agent: strategy-analyst
+          inputs:
+            - 创业想法
+          outputs:
+            - 行业分析
+            - 商业模式画布
+          estimated_effort: medium
+
+        - id: market-research
+          agent: research-market
+          inputs:
+            - 目标用户假设
+          outputs:
+            - 用户画像
+            - TAM/SAM/SOM
+          estimated_effort: medium
+
+    # ====== 阶段 2:方案设计 ======
+    - stage: 方案设计
+      parallel: true
+      depends_on: [opc-validate, industry-analysis, market-research]
+      tasks:
+        - id: product-design
+          agent: product-pm
+          inputs:
+            - 用户画像
+            - 商业模式
+          outputs:
+            - PRD
+            - 路线图
+          estimated_effort: large
+
+        - id: marketing-plan
+          agent: marketing-growth-hacker
+          inputs:
+            - 用户画像
+            - PRD
+          outputs:
+            - 营销策略
+            - 获客计划
+          estimated_effort: medium
+
+        - id: org-design
+          agent: org-architect
+          inputs:
+            - 路线图
+          outputs:
+            - 组织架构
+            - 股权方案
+          estimated_effort: medium
+
+        - id: financial-model
+          agent: finance-financial-analyst
+          inputs:
+            - 营销策略
+            - 组织架构
+          outputs:
+            - 3 年财务预测
+            - 盈亏平衡分析
+          estimated_effort: large
+
+    # ====== 阶段 3:整合输出 ======
+    - stage: 整合输出
+      parallel: true
+      depends_on: [product-design, marketing-plan, org-design, financial-model]
+      tasks:
+        - id: risk-analysis
+          agent: risk-manager
+          inputs:
+            - 全部方案
+          outputs:
+            - 风险矩阵
+            - 应对预案
+          estimated_effort: medium
+
+        - id: fundraising-plan
+          agent: finance-fundraising
+          inputs:
+            - 财务模型
+            - 团队
+          outputs:
+            - 融资方案
+            - 估值建议
+          estimated_effort: medium
+
+        - id: bp-final
+          agent: director-bp
+          inputs:
+            - 所有阶段输出
+          outputs:
+            - 完整 BP
+            - 执行路线图
+          estimated_effort: large
+
+  quality_gates:
+    - "GO 决策通过"
+    - "财务模型盈亏平衡可达"
+    - "BP 覆盖全部 11 个章节"
+    - "各章节数据一致"

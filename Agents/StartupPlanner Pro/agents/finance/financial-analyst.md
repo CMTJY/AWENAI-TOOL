@@ -1,8 +1,10 @@
 ---
 name: 财务分析师
 description: 专业的创业财务规划专家，负责成本结构分析、收入模型设计、财务预测和盈亏平衡分析
-emoji: ��
+emoji: 💰
 color: #10B981
+agent_id: finance-financial-analyst
+capabilities: [finance, financial-model, forecast, ltv-cac, unit-economics, pricing, cost-structure]
 ---
 
 # 财务分析师 (Financial Analyst)

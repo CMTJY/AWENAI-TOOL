@@ -1,0 +1,123 @@
+# 软件开发工作流
+# 适用:从 0 到 1 开发一个软件工具/应用/网站
+
+workflow:
+  id: software-dev
+  name: 软件开发工作流
+  version: "1.0"
+  description: 从需求到上线的完整软件开发协作流程
+
+  stages:
+
+    # ====== 阶段 1:需求分析 ======
+    - stage: 需求分析
+      parallel: false
+      tasks:
+        - id: req-collect
+          agent: product-pm
+          inputs:
+            - 用户原始需求
+          outputs:
+            - 需求清单
+            - 用户故事
+            - 验收标准
+          estimated_effort: small
+
+    # ====== 阶段 2:技术方案 ======
+    - stage: 技术方案
+      parallel: false
+      depends_on: [req-collect]
+      tasks:
+        - id: tech-design
+          agent: tech-architect
+          inputs:
+            - 需求清单
+          outputs:
+            - 技术选型
+            - 系统架构图
+            - 模块划分
+            - 数据模型初稿
+          estimated_effort: medium
+
+    # ====== 阶段 3:并行实现 ======
+    - stage: 并行实现
+      parallel: true
+      depends_on: [tech-design]
+      tasks:
+        - id: backend-impl
+          agent: tech-backend-dev
+          inputs:
+            - 系统架构图
+            - 数据模型
+          outputs:
+            - API 接口文档
+            - 数据库 Schema
+            - 核心后端代码
+          estimated_effort: large
+
+        - id: frontend-impl
+          agent: tech-frontend-dev
+          inputs:
+            - API 接口文档
+            - 用户故事
+          outputs:
+            - 页面组件代码
+            - 状态管理
+            - 样式文件
+          estimated_effort: large
+
+        - id: mobile-impl
+          agent: tech-mobile-dev
+          optional: true  # 仅当需要移动端
+          inputs:
+            - 系统架构图
+          outputs:
+            - 移动端代码
+          estimated_effort: large
+
+    # ====== 阶段 4:测试 ======
+    - stage: 测试验证
+      parallel: false
+      depends_on: [backend-impl, frontend-impl]
+      tasks:
+        - id: qa-test
+          agent: tech-qa
+          inputs:
+            - 后端代码
+            - 前端代码
+            - 用户故事
+          outputs:
+            - 测试用例
+            - 测试报告
+            - 缺陷清单
+          estimated_effort: medium
+
+    # ====== 阶段 5:部署 ======
+    - stage: 部署上线
+      parallel: false
+      depends_on: [qa-test]
+      tasks:
+        - id: deploy
+          agent: tech-devops
+          inputs:
+            - 后端代码
+            - 前端代码
+          outputs:
+            - Dockerfile
+            - CI/CD 配置
+            - 部署文档
+          estimated_effort: small
+
+  mvp_shortcut:
+    description: 跳过完整流程,只做 MVP
+    stages:
+      - tech-architect(轻量)
+      - tech-backend-dev + tech-frontend-dev(并行)
+      - tech-qa(冒烟)
+      - tech-devops(快速部署)
+
+  quality_gates:
+    - "PRD 完整且可执行"
+    - "技术方案通过评审"
+    - "所有 P0/P1 测试用例通过"
+    - "部署文档齐全"

@@ -1,0 +1,97 @@
+# 营销活动工作流
+# 适用:从策划到执行一场营销活动/推广 campaign
+
+workflow:
+  id: marketing-campaign
+  name: 营销活动工作流
+  version: "1.0"
+  description: 从市场洞察到活动执行再到效果复盘的完整营销流程
+
+  stages:
+
+    # ====== 阶段 1:市场调研 ======
+    - stage: 市场调研
+      parallel: true
+      tasks:
+        - id: market-research
+          agent: research-market
+          inputs:
+            - 活动主题
+            - 目标用户
+          outputs:
+            - 市场规模
+            - 用户画像
+          estimated_effort: medium
+
+        - id: competitor-scan
+          agent: research-competitor
+          inputs:
+            - 活动主题
+          outputs:
+            - 竞品活动对比
+            - 差异化机会
+          estimated_effort: small
+
+    # ====== 阶段 2:策略制定 ======
+    - stage: 营销策略
+      parallel: true
+      depends_on: [market-research, competitor-scan]
+      tasks:
+        - id: growth-strategy
+          agent: marketing-growth-hacker
+          inputs:
+            - 市场调研结果
+            - 用户画像
+          outputs:
+            - 增长策略
+            - 获客渠道
+            - 漏斗设计
+            - 转化目标
+          estimated_effort: medium
+
+        - id: content-strategy
+          agent: marketing-content-creator
+          inputs:
+            - 用户画像
+            - 增长策略
+          outputs:
+            - 内容大纲
+            - 核心文案
+            - 素材清单
+          estimated_effort: medium
+
+    # ====== 阶段 3:预算与执行 ======
+    - stage: 预算与执行
+      parallel: false
+      depends_on: [growth-strategy, content-strategy]
+      tasks:
+        - id: budget-plan
+          agent: finance-financial-analyst
+          inputs:
+            - 获客渠道
+            - 转化目标
+          outputs:
+            - 预算分配
+            - ROI 预测
+          estimated_effort: small
+
+    # ====== 阶段 4:风险评估 ======
+    - stage: 风险评估
+      parallel: true
+      depends_on: [growth-strategy]
+      tasks:
+        - id: risk-check
+          agent: risk-manager
+          inputs:
+            - 营销策略
+            - 内容文案
+          outputs:
+            - 合规风险清单
+            - 应对预案
+          estimated_effort: small
+
+  quality_gates:
+    - "目标用户画像清晰"
+    - "转化漏斗完整"
+    - "预算 ROI 可计算"
+    - "合规风险可控"

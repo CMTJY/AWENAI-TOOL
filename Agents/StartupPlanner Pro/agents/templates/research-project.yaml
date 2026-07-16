@@ -1,0 +1,78 @@
+# 综合调研工作流
+# 适用:对一个领域/话题/问题做全面深入调研
+
+workflow:
+  id: research-project
+  name: 综合调研工作流
+  version: "1.0"
+  description: 多维度交叉验证的深度调研流程
+
+  stages:
+
+    # ====== 阶段 1:问题框定 ======
+    - stage: 问题框定
+      parallel: false
+      tasks:
+        - id: scope
+          agent: core-task-planner
+          inputs:
+            - 调研主题
+          outputs:
+            - 调研边界
+            - 关键问题清单
+          estimated_effort: small
+
+    # ====== 阶段 2:多维调研 ======
+    - stage: 多维调研
+      parallel: true
+      depends_on: [scope]
+      tasks:
+        - id: market-dim
+          agent: research-market
+          inputs:
+            - 关键问题清单
+          outputs:
+            - 市场数据
+            - 趋势分析
+          estimated_effort: medium
+
+        - id: competitor-dim
+          agent: research-competitor
+          inputs:
+            - 关键问题清单
+          outputs:
+            - 竞品全景
+            - 差异化矩阵
+          estimated_effort: medium
+
+        - id: user-dim
+          agent: research-analyst
+          inputs:
+            - 关键问题清单
+          outputs:
+            - 用户调研
+            - 需求洞察
+          estimated_effort: medium
+
+    # ====== 阶段 3:综合分析 ======
+    - stage: 综合分析
+      parallel: false
+      depends_on: [market-dim, competitor-dim, user-dim]
+      tasks:
+        - id: synthesis
+          agent: core-aggregator
+          inputs:
+            - 市场数据
+            - 竞品分析
+            - 用户洞察
+          outputs:
+            - 综合调研报告
+            - 核心洞察
+            - 行动建议
+          estimated_effort: medium
+
+  quality_gates:
+    - "数据来源可追溯"
+    - "至少 2 个独立来源交叉验证"
+    - "核心洞察不超过 5 条"
+    - "行动建议可执行"

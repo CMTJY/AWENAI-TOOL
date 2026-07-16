@@ -1,0 +1,256 @@
+# 通用 Agent 团队能力注册表
+# 格式: agent_id → {name, department, capabilities, description, file}
+# capabilities: 能力标签列表,供 router 匹配使用
+
+agents:
+
+  # ============ 核心调度层 ============
+  - id: core-orchestrator
+    name: 通用主控
+    department: core
+    file: core/orchestrator.md
+    description: 通用多智能体编排器,接收任务、调度 subagent、汇总结果
+    capabilities: [orchestration, coordination, planning]
+    priority: 1
+
+  - id: core-router
+    name: 任务路由器
+    department: core
+    file: core/router.md
+    description: 意图识别 + 能力匹配,把任务映射到具体 agent
+    capabilities: [intent-recognition, classification, routing]
+    priority: 2
+
+  - id: core-aggregator
+    name: 结果汇总器
+    department: core
+    file: core/aggregator.md
+    description: 多 subagent 输出合并为最终交付物
+    capabilities: [synthesis, formatting, deduplication]
+    priority: 2
+
+  - id: core-task-planner
+    name: 任务拆解器
+    department: core
+    file: core/task-planner.md
+    description: 把复杂任务拆成 MECE 子任务
+    capabilities: [decomposition, dependency-analysis, planning]
+    priority: 2
+
+  # ============ 技术部 ============
+  - id: tech-architect
+    name: 技术架构师
+    department: tech
+    file: tech/architect.md
+    description: 技术选型、系统架构、模块拆分
+    capabilities: [architecture, tech-stack, system-design, scalability]
+    priority: 1
+
+  - id: tech-backend-dev
+    name: 后端开发
+    department: tech
+    file: tech/backend-dev.md
+    description: 后端 API、数据库、服务端逻辑
+    capabilities: [backend, api, database, server, python, node, go]
+    priority: 1
+
+  - id: tech-frontend-dev
+    name: 前端开发
+    department: tech
+    file: tech/frontend-dev.md
+    description: Web 前端、UI 实现、交互逻辑
+    capabilities: [frontend, ui, react, vue, css, html, javascript]
+    priority: 1
+
+  - id: tech-mobile-dev
+    name: 移动端开发
+    department: tech
+    file: tech/mobile-dev.md
+    description: iOS / Android / 跨端开发
+    capabilities: [mobile, ios, android, react-native, flutter]
+    priority: 2
+
+  - id: tech-devops
+    name: DevOps 工程师
+    department: tech
+    file: tech/devops.md
+    description: CI/CD、部署、监控、运维
+    capabilities: [devops, ci-cd, deployment, monitoring, docker, k8s]
+    priority: 2
+
+  - id: tech-qa
+    name: 测试工程师
+    department: tech
+    file: tech/qa.md
+    description: 功能测试、性能测试、自动化测试
+    capabilities: [testing, qa, automation, performance-testing]
+    priority: 2
+
+  # ============ 调研分析部 ============
+  - id: research-analyst
+    name: 通用调研分析师
+    department: research
+    file: research/analyst.md
+    description: 通用信息收集、分析、报告撰写
+    capabilities: [research, analysis, report, data-analysis]
+    priority: 1
+
+  - id: research-market
+    name: 市场研究员
+    department: research
+    file: research/market.md
+    description: 市场调研、用户洞察、TAM/SAM/SOM 测算
+    capabilities: [market-research, user-insight, market-sizing, tam-sam-som]
+    priority: 1
+
+  - id: research-competitor
+    name: 竞品分析师
+    department: research
+    file: research/competitor.md
+    description: 竞品分析、对比矩阵、差异化分析
+    capabilities: [competitor-analysis, benchmarking, swot]
+    priority: 2
+
+  # ============ 战略部 ============
+  - id: strategy-opc
+    name: OPC 战略师
+    department: strategy
+    file: strategy/opc-strategist/opc-strategist.md
+    description: AI 原生创业验证,7步+1闸方法论
+    capabilities: [strategy, validation, hypothesis-testing, opc-strategy]
+    priority: 1
+
+  - id: strategy-analyst
+    name: 战略分析师
+    department: strategy
+    file: strategy/strategy-analyst.md
+    description: 行业分析、商业模式设计、PEST/波特五力
+    capabilities: [strategy, industry-analysis, business-model, pest, porters-five]
+    priority: 1
+
+  # ============ 产品部 ============
+  - id: product-pm
+    name: 产品经理
+    department: product
+    file: product/product-manager/product-manager.md
+    description: 产品规划、PRD、需求管理、用户故事,内置 54 个 skill
+    capabilities: [product-management, prd, user-story, roadmap, jobs-to-be-done, prioritization]
+    priority: 1
+
+  - id: product-mvp-designer
+    name: MVP 设计师
+    department: product
+    file: product/mvp-designer.md
+    description: 最小可行产品设计
+    capabilities: [mvp, lean, prototype]
+    priority: 2
+
+  - id: product-director
+    name: 产品总监
+    department: product
+    file: product/product-director/product-director.md
+    description: 产品战略、产品愿景、跨阶段规划
+    capabilities: [product-strategy, vision, leadership]
+    priority: 3
+
+  # ============ 营销部 ============
+  - id: marketing-growth-hacker
+    name: 增长黑客
+    department: marketing
+    file: marketing/Product-EVENT/marketing-growth-hacker.md
+    description: 增长策略、获客、漏斗优化
+    capabilities: [growth, acquisition, funnel, virality, aarrr]
+    priority: 1
+
+  - id: marketing-content-creator
+    name: 内容创作者
+    department: marketing
+    file: marketing/media-content/marketing-content-creator.md
+    description: 内容创作、品牌文案
+    capabilities: [content, copywriting, brand, writing]
+    priority: 1
+
+  - id: marketing-social-media
+    name: 社交媒体运营
+    department: marketing
+    file: marketing/media-content/marketing-xiaohongshu-operator.md
+    description: 小红书、抖音、微博等社交平台运营
+    capabilities: [social-media, xiaohongshu, douyin, weibo, tiktok]
+    priority: 2
+
+  - id: marketing-ecommerce
+    name: 电商运营
+    department: marketing
+    file: marketing/product-sales/marketing-ecommerce-operator.md
+    description: 电商运营、直播带货
+    capabilities: [ecommerce, taobao, tmall, livestream, shopify]
+    priority: 2
+
+  - id: marketing-private-domain
+    name: 私域运营
+    department: marketing
+    file: marketing/fans-domain/marketing-private-domain-operator.md
+    description: 私域流量、社群运营
+    capabilities: [private-domain, community, wechat, retention]
+    priority: 2
+
+  # ============ 财务部 ============
+  - id: finance-financial-analyst
+    name: 财务分析师
+    department: finance
+    file: finance/financial-analyst.md
+    description: 财务建模、3年预测、盈亏平衡
+    capabilities: [finance, financial-model, forecast, ltv-cac, unit-economics]
+    priority: 1
+
+  - id: finance-fundraising
+    name: 融资顾问
+    department: finance
+    file: finance/fundraising-advisor.md
+    description: 融资策略、投资人沟通、估值
+    capabilities: [fundraising, valuation, investor-relations, pitch-deck]
+    priority: 2
+
+  # ============ 组织部 ============
+  - id: org-architect
+    name: 组织架构师
+    department: organization
+    file: organization/org-architect.md
+    description: 团队架构、股权设计、治理结构
+    capabilities: [org-design, equity, governance, structure]
+    priority: 2
+
+  - id: org-talent-planner
+    name: 人才规划师
+    department: organization
+    file: organization/talent-planner.md
+    description: 招聘、人才策略、JD
+    capabilities: [hiring, talent, recruitment, jd]
+    priority: 2
+
+  # ============ 风险部 ============
+  - id: risk-manager
+    name: 风险管理师
+    department: risk
+    file: risk/risk-manager.md
+    description: 风险识别、应对预案、合规
+    capabilities: [risk, compliance, mitigation, risk-matrix]
+    priority: 2
+
+  # ============ 指挥层(兼容) ============
+  - id: director-startup
+    name: 创业总指挥(原)
+    department: _director
+    file: _director/director-startup.md
+    description: 创业规划专用编排器
+    capabilities: [startup, bp, planning, orchestration]
+    priority: 3
+    note: 建议使用 core-orchestrator 替代
+
+  - id: director-bp
+    name: BP 总编
+    department: _director
+    file: _director/director-bp.md
+    description: 商业计划书整合输出
+    capabilities: [bp-writing, document-integration]
+    priority: 3

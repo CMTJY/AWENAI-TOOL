@@ -59,6 +59,7 @@ agents/
 │   └── competitor.md              # 竞品分析师
 │
 ├── strategy/                      # 战略部(原有,通用化)
+<<<<<<< HEAD
 │   ├── opc-strategist/            # OPC 战略师
 │   ├── strategy-analyst.md        # 战略分析师
 │   └── market-researcher.md       # 市场调研员(原 strategy)
@@ -74,13 +75,21 @@ agents/
 │   ├── fans-domain/               # 私域
 │   └── product-sales/             # 电商、直播
 │
+=======
+├── product/                       # 产品部(原有,通用化)
+├── marketing/                     # 营销部(原有)
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
 ├── finance/                       # 财务部(原有)
 ├── organization/                  # 组织部(原有)
 ├── risk/                          # 风险部(原有)
 │
+<<<<<<< HEAD
 └── _director/                     # 兼容层(保留原创业总指挥)
     ├── director-startup.md        # 原 StartupPlanner 主入口
     └── director-bp.md             # BP 总编
+=======
+└── _director/                     # 兼容层
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
 ```
 
 ## 工作原理
@@ -105,7 +114,11 @@ Orchestrator:
 ## 如何使用
 
 ### 方式 1:直接与通用主控对话(推荐)
+<<<<<<< HEAD
 把 `core/orchestrator.md` 作为你的入口 agent。它会自动调用其他 agent 协作。
+=======
+把 `core/orchestrator.md` 作为入口 agent。它会自动调用其他 agent 协作。
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
 
 ### 方式 2:选预设工作流
 告诉主控:"按 software-dev 工作流跑"或"用 marketing-campaign 流程"
@@ -114,12 +127,16 @@ Orchestrator:
 参见 `templates/custom.md`
 
 ### 方式 4:直接调单个 agent
+<<<<<<< HEAD
 和以前一样,可以绕过主控直接调特定 agent。
+=======
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
 
 ## 各部门能力
 
 | 部门 | Agent 数 | 核心能力 | 典型场景 |
 |------|----------|----------|----------|
+<<<<<<< HEAD
 | **core**(调度) | 4 | 编排、路由、拆解、汇总 | 任何任务的入口 |
 | **tech**(技术) | 6 | 架构、开发、部署、测试 | 软件开发、技术决策 |
 | **research**(调研) | 3 | 调研、市场、竞品 | 信息收集、市场分析 |
@@ -181,6 +198,43 @@ capabilities: [tag1, tag2]
 - ✅ **渐进升级**:旧的工作流(director-startup)继续可用
 - 🆕 **新能力**:通用调度层 + 自动路由 + 可扩展工作流
 - 📌 **建议**:新项目用 `core/orchestrator`,老 BP 项目仍可用 `director-startup`
+=======
+| **core** | 4 | 编排、路由、拆解、汇总 | 任何任务的入口 |
+| **tech** | 6 | 架构、开发、部署、测试 | 软件开发、技术决策 |
+| **research** | 3 | 调研、市场、竞品 | 信息收集、市场分析 |
+| **strategy** | 3+ | 战略、商业模式、行业 | 战略规划、商业分析 |
+| **product** | 3 | PRD、路线图、需求 | 产品规划、需求管理 |
+| **marketing** | 9+ | 增长、内容、电商、私域 | 营销活动、获客、品牌 |
+| **finance** | 2 | 财务建模、融资 | 财务规划、融资路演 |
+| **organization** | 2 | 架构、招聘 | 组织设计、人才规划 |
+| **risk** | 1 | 风险识别、合规 | 风险评估、合规审查 |
+
+## 添加新 Agent(极简流程)
+
+1. 在对应部门下创建 `xxx.md`,写好 frontmatter(加 `agent_id` 和 `capabilities`)
+2. 在 `config/capabilities.yaml` 中注册
+3. 在 `config/routing-rules.yaml` 中加路由规则(可选)
+
+**就这么简单**,无需改其他任何文件。
+
+## 接入真实多 Agent 框架
+
+本规则库可以**零成本**接入以下框架:
+
+| 框架 | 适配方式 |
+|------|----------|
+| **CrewAI** | 每份 `.md` 是一个 CrewAI Agent 配置 |
+| **LangGraph** | 用 `templates/*.yaml` 定义 LangGraph 工作流 |
+| **AutoGen** | `core/orchestrator.md` 作为 GroupChat Manager |
+| **Claude Code Subagent** | 复制到 `.claude/agents/` 直接生效 |
+
+## 与原 StartupPlanner 的关系
+
+- 完全兼容:原 12 个核心 agent、所有 skill、所有模板都保留
+- 渐进升级:旧的工作流(director-startup)继续可用
+- 新能力:通用调度层 + 自动路由 + 可扩展工作流
+- 建议:新项目用 `core/orchestrator`,老 BP 项目仍可用 `director-startup`
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
 
 ## 更新日志
 
@@ -193,7 +247,7 @@ capabilities: [tag1, tag2]
 
 ## 维护者
 
-- **StartupPlanner Team** - 核心开发与维护
+- **StartupPlanner Team**
 
 ---
 

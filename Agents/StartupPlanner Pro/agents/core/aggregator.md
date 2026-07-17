@@ -27,7 +27,11 @@ capabilities: [synthesis, formatting, deduplication, summarization]
   "subagent_outputs": [
     {
       "agent_id": "{agent_id}",
+<<<<<<< HEAD
       "role": "{该 agent 在本次任务的角色}",
+=======
+      "role": "{该 agent 在本次任务中的角色}",
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
       "output": {
         "summary": "{一句话摘要}",
         "details": "{详细内容,可以是 markdown/json/代码}",

@@ -11,7 +11,11 @@ agents:
     file: core/orchestrator.md
     description: 通用多智能体编排器,接收任务、调度 subagent、汇总结果
     capabilities: [orchestration, coordination, planning]
+<<<<<<< HEAD
     priority: 1  # 永远最高
+=======
+    priority: 1
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
 
   - id: core-router
     name: 任务路由器
@@ -111,7 +115,11 @@ agents:
     capabilities: [competitor-analysis, benchmarking, swot]
     priority: 2
 
+<<<<<<< HEAD
   # ============ 战略部(原 agents/strategy) ============
+=======
+  # ============ 战略部 ============
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
   - id: strategy-opc
     name: OPC 战略师
     department: strategy
@@ -128,7 +136,11 @@ agents:
     capabilities: [strategy, industry-analysis, business-model, pest, porters-five]
     priority: 1
 
+<<<<<<< HEAD
   # ============ 产品部(原 agents/product) ============
+=======
+  # ============ 产品部 ============
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
   - id: product-pm
     name: 产品经理
     department: product
@@ -153,7 +165,11 @@ agents:
     capabilities: [product-strategy, vision, leadership]
     priority: 3
 
+<<<<<<< HEAD
   # ============ 营销部(原 agents/marketing) ============
+=======
+  # ============ 营销部 ============
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
   - id: marketing-growth-hacker
     name: 增长黑客
     department: marketing
@@ -237,15 +253,26 @@ agents:
     capabilities: [risk, compliance, mitigation, risk-matrix]
     priority: 2
 
+<<<<<<< HEAD
   # ============ 指挥层(创业规划专用,保留兼容) ============
+=======
+  # ============ 指挥层(兼容) ============
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
   - id: director-startup
     name: 创业总指挥(原)
     department: _director
     file: _director/director-startup.md
+<<<<<<< HEAD
     description: 创业规划专用编排器(原 StartupPlanner 主入口)
     capabilities: [startup, bp, planning, orchestration]
     priority: 3
     note: 建议使用 core-orchestrator 替代,此 agent 保留兼容
+=======
+    description: 创业规划专用编排器
+    capabilities: [startup, bp, planning, orchestration]
+    priority: 3
+    note: 建议使用 core-orchestrator 替代
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
 
   - id: director-bp
     name: BP 总编

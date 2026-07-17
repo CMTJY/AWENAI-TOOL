@@ -7,9 +7,15 @@ updated: "2026-07-16"
 
 # 全局默认规则
 defaults:
+<<<<<<< HEAD
   fallback_agents: [core-orchestrator]  # 不匹配任何规则时,转交主控
   min_confidence: 0.6  # 低于此置信度主动询问用户
   max_agents_per_task: 6  # 单次任务最多调度的 agent 数
+=======
+  fallback_agents: [core-orchestrator]
+  min_confidence: 0.6
+  max_agents_per_task: 6
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
 
 rules:
 
@@ -34,8 +40,13 @@ rules:
       - "开发.*?(功能|模块|接口)"
       - "写.*?(代码|程序|脚本)"
     primary_agents:
+<<<<<<< HEAD
       - tech-architect       # 架构设计
       - product-pm           # PRD + 需求
+=======
+      - tech-architect
+      - product-pm
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
     parallel_agents:
       - tech-backend-dev
       - tech-frontend-dev
@@ -46,6 +57,7 @@ rules:
 
   - id: frontend-dev
     name: 前端开发
+<<<<<<< HEAD
     keywords:
       - 前端
       - 页面
@@ -55,11 +67,15 @@ rules:
       - react
       - vue
       - 样式
+=======
+    keywords: [前端, 页面, UI, 界面, 组件, react, vue, 样式]
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
     primary_agents: [tech-frontend-dev]
     confidence_boost: 0.4
 
   - id: backend-dev
     name: 后端开发
+<<<<<<< HEAD
     keywords:
       - 后端
       - 接口
@@ -69,11 +85,15 @@ rules:
       - python
       - node
       - go
+=======
+    keywords: [后端, 接口, API, 数据库, 服务端, python, node, go]
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
     primary_agents: [tech-backend-dev, tech-architect]
     confidence_boost: 0.4
 
   - id: mobile-dev
     name: 移动端开发
+<<<<<<< HEAD
     keywords:
       - 移动端
       - iOS
@@ -81,11 +101,15 @@ rules:
       - 小程序
       - 公众号
       - 鸿蒙
+=======
+    keywords: [移动端, iOS, Android, 小程序, 公众号, 鸿蒙]
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
     primary_agents: [tech-mobile-dev]
     confidence_boost: 0.5
 
   - id: devops-deploy
     name: 部署运维
+<<<<<<< HEAD
     keywords:
       - 部署
       - 上线
@@ -94,23 +118,31 @@ rules:
       - 监控
       - docker
       - k8s
+=======
+    keywords: [部署, 上线, CI/CD, 运维, 监控, docker, k8s]
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
     primary_agents: [tech-devops]
     confidence_boost: 0.5
 
   - id: testing-qa
     name: 测试
+<<<<<<< HEAD
     keywords:
       - 测试
       - 自动化测试
       - 性能测试
       - bug
       - 质量
+=======
+    keywords: [测试, 自动化测试, 性能测试, bug, 质量]
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
     primary_agents: [tech-qa]
     confidence_boost: 0.4
 
   # ============ 调研分析类 ============
   - id: research-general
     name: 通用调研
+<<<<<<< HEAD
     keywords:
       - 调研
       - 研究
@@ -118,11 +150,15 @@ rules:
       - 看看
       - 了解一下
       - 收集资料
+=======
+    keywords: [调研, 研究, 分析, 看看, 了解一下, 收集资料]
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
     primary_agents: [research-analyst]
     confidence_boost: 0.3
 
   - id: market-research
     name: 市场调研
+<<<<<<< HEAD
     keywords:
       - 市场
       - 行业
@@ -131,23 +167,31 @@ rules:
       - SAM
       - 趋势
       - 用户画像
+=======
+    keywords: [市场, 行业, 规模, TAM, SAM, 趋势, 用户画像]
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
     primary_agents: [research-market, research-analyst]
     confidence_boost: 0.4
 
   - id: competitor-analysis
     name: 竞品分析
+<<<<<<< HEAD
     keywords:
       - 竞品
       - 对手
       - 比较
       - 对标
       - 差异化
+=======
+    keywords: [竞品, 对手, 比较, 对标, 差异化]
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
     primary_agents: [research-competitor]
     confidence_boost: 0.5
 
   # ============ 战略规划类 ============
   - id: strategy-planning
     name: 战略规划
+<<<<<<< HEAD
     keywords:
       - 战略
       - 规划
@@ -155,11 +199,15 @@ rules:
       - 竞争格局
       - 五力
       - PEST
+=======
+    keywords: [战略, 规划, 商业模式, 竞争格局, 五力, PEST]
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
     primary_agents: [strategy-analyst]
     confidence_boost: 0.4
 
   - id: startup-validation
     name: 创业验证
+<<<<<<< HEAD
     keywords:
       - 创业
       - 立项
@@ -167,17 +215,24 @@ rules:
       - 假设
       - MVP
       - 从0到1
+=======
+    keywords: [创业, 立项, 验证, 假设, MVP, 从0到1]
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
     primary_agents: [strategy-opc, product-pm]
     workflow: bp-planning
     confidence_boost: 0.5
 
   - id: bp-writing
     name: 商业计划书
+<<<<<<< HEAD
     keywords:
       - BP
       - 商业计划书
       - 融资计划
       - 路演
+=======
+    keywords: [BP, 商业计划书, 融资计划, 路演]
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
     primary_agents: [director-bp, strategy-opc]
     workflow: bp-planning
     confidence_boost: 0.5
@@ -185,38 +240,51 @@ rules:
   # ============ 产品类 ============
   - id: product-prd
     name: PRD 撰写
+<<<<<<< HEAD
     keywords:
       - PRD
       - 产品需求
       - 需求文档
       - 功能列表
       - 用户故事
+=======
+    keywords: [PRD, 产品需求, 需求文档, 功能列表, 用户故事]
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
     primary_agents: [product-pm]
     confidence_boost: 0.5
 
   - id: product-roadmap
     name: 产品路线图
+<<<<<<< HEAD
     keywords:
       - 路线图
       - roadmap
       - 迭代计划
       - 版本规划
+=======
+    keywords: [路线图, roadmap, 迭代计划, 版本规划]
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
     primary_agents: [product-pm, product-director]
     confidence_boost: 0.5
 
   - id: mvp-design
     name: MVP 设计
+<<<<<<< HEAD
     keywords:
       - MVP
       - 最小可行
       - 原型
       - 验证方案
+=======
+    keywords: [MVP, 最小可行, 原型, 验证方案]
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
     primary_agents: [product-mvp-designer, product-pm]
     confidence_boost: 0.4
 
   # ============ 营销类 ============
   - id: marketing-strategy
     name: 营销策略
+<<<<<<< HEAD
     keywords:
       - 营销
       - 推广
@@ -224,12 +292,16 @@ rules:
       - 增长
       - 拉新
       - 转化
+=======
+    keywords: [营销, 推广, 获客, 增长, 拉新, 转化]
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
     primary_agents: [marketing-growth-hacker]
     workflow: marketing-campaign
     confidence_boost: 0.4
 
   - id: content-writing
     name: 内容创作
+<<<<<<< HEAD
     keywords:
       - 写文案
       - 写文章
@@ -238,11 +310,15 @@ rules:
       - 推文
       - 视频脚本
       - 公众号文章
+=======
+    keywords: [写文案, 写文章, 脚本, 软文, 推文, 视频脚本, 公众号文章]
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
     primary_agents: [marketing-content-creator]
     confidence_boost: 0.4
 
   - id: social-media-ops
     name: 社交媒体运营
+<<<<<<< HEAD
     keywords:
       - 小红书
       - 抖音
@@ -250,11 +326,15 @@ rules:
       - 视频号
       - 短视频
       - 自媒体
+=======
+    keywords: [小红书, 抖音, 微博, 视频号, 短视频, 自媒体]
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
     primary_agents: [marketing-social-media]
     confidence_boost: 0.5
 
   - id: ecommerce-ops
     name: 电商运营
+<<<<<<< HEAD
     keywords:
       - 电商
       - 淘宝
@@ -263,23 +343,31 @@ rules:
       - 拼多多
       - 直播带货
       - shopify
+=======
+    keywords: [电商, 淘宝, 天猫, 京东, 拼多多, 直播带货, shopify]
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
     primary_agents: [marketing-ecommerce]
     confidence_boost: 0.5
 
   - id: private-domain
     name: 私域运营
+<<<<<<< HEAD
     keywords:
       - 私域
       - 社群
       - 微信群
       - 朋友圈
       - 用户留存
+=======
+    keywords: [私域, 社群, 微信群, 朋友圈, 用户留存]
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
     primary_agents: [marketing-private-domain]
     confidence_boost: 0.5
 
   # ============ 财务类 ============
   - id: finance-model
     name: 财务建模
+<<<<<<< HEAD
     keywords:
       - 财务
       - 预算
@@ -289,11 +377,15 @@ rules:
       - 盈亏平衡
       - LTV
       - CAC
+=======
+    keywords: [财务, 预算, 成本, 收入预测, 现金流, 盈亏平衡, LTV, CAC]
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
     primary_agents: [finance-financial-analyst]
     confidence_boost: 0.5
 
   - id: fundraising
     name: 融资
+<<<<<<< HEAD
     keywords:
       - 融资
       - 估值
@@ -302,34 +394,46 @@ rules:
       - 股权融资
       - 天使轮
       - A轮
+=======
+    keywords: [融资, 估值, 投资人, 路演, 股权融资, 天使轮, A轮]
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
     primary_agents: [finance-fundraising]
     confidence_boost: 0.5
 
   # ============ 组织类 ============
   - id: org-design
     name: 组织架构
+<<<<<<< HEAD
     keywords:
       - 组织架构
       - 股权设计
       - 团队结构
       - 治理
+=======
+    keywords: [组织架构, 股权设计, 团队结构, 治理]
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
     primary_agents: [org-architect]
     confidence_boost: 0.5
 
   - id: hiring
     name: 招聘
+<<<<<<< HEAD
     keywords:
       - 招聘
       - 招人
       - JD
       - 人才
       - 面试
+=======
+    keywords: [招聘, 招人, JD, 人才, 面试]
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
     primary_agents: [org-talent-planner]
     confidence_boost: 0.4
 
   # ============ 风险类 ============
   - id: risk-analysis
     name: 风险评估
+<<<<<<< HEAD
     keywords:
       - 风险
       - 合规
@@ -343,5 +447,14 @@ rules:
 multi_intent:
   # 例如"开发一个工具并做市场调研"
   strategy: parallel  # 默认并行执行
+=======
+    keywords: [风险, 合规, 法律, 政策, 监管]
+    primary_agents: [risk-manager]
+    confidence_boost: 0.4
+
+# 多意图合并规则
+multi_intent:
+  strategy: parallel
+>>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
   max_parallel_rules: 4
   merge_via: core-aggregator

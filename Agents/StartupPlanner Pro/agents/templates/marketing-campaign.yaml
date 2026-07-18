@@ -1,97 +1,89 @@
-# 营销活动工作流
-# 适用:从策划到执行一场营销活动/推广 campaign
-
+schema_version: "2.0"
 workflow:
   id: marketing-campaign
-  name: 营销活动工作流
-  version: "1.0"
-  description: 从市场洞察到活动执行再到效果复盘的完整营销流程
-
-  stages:
-
-    # ====== 阶段 1:市场调研 ======
-    - stage: 市场调研
-      parallel: true
-      tasks:
-        - id: market-research
-          agent: research-market
-          inputs:
-            - 活动主题
-            - 目标用户
-          outputs:
-            - 市场规模
-            - 用户画像
-          estimated_effort: medium
-
-        - id: competitor-scan
-          agent: research-competitor
-          inputs:
-            - 活动主题
-          outputs:
-            - 竞品活动对比
-            - 差异化机会
-          estimated_effort: small
-
-    # ====== 阶段 2:策略制定 ======
-    - stage: 营销策略
-      parallel: true
-      depends_on: [market-research, competitor-scan]
-      tasks:
-        - id: growth-strategy
-          agent: marketing-growth-hacker
-          inputs:
-            - 市场调研结果
-            - 用户画像
-          outputs:
-            - 增长策略
-            - 获客渠道
-            - 漏斗设计
-            - 转化目标
-          estimated_effort: medium
-
-        - id: content-strategy
-          agent: marketing-content-creator
-          inputs:
-            - 用户画像
-            - 增长策略
-          outputs:
-            - 内容大纲
-            - 核心文案
-            - 素材清单
-          estimated_effort: medium
-
-    # ====== 阶段 3:预算与执行 ======
-    - stage: 预算与执行
-      parallel: false
-      depends_on: [growth-strategy, content-strategy]
-      tasks:
-        - id: budget-plan
-          agent: finance-financial-analyst
-          inputs:
-            - 获客渠道
-            - 转化目标
-          outputs:
-            - 预算分配
-            - ROI 预测
-          estimated_effort: small
-
-    # ====== 阶段 4:风险评估 ======
-    - stage: 风险评估
-      parallel: true
+  name: 营销活动协作流
+  version: "2.0"
+  goal: 形成有用户证据、预算约束和合规审查的可执行营销活动
+  system_inputs: [project-brief]
+  final_artifacts: [campaign-deliverable]
+  tasks:
+    - id: market-insight
+      objective: 识别目标市场和受众行为证据
+      agent: research-market
+      depends_on: []
+      requires: [project-brief]
+      produces: {id: market-insight, type: market-report}
+      acceptance_criteria: [目标受众可识别, 关键判断有来源, 标注数据日期]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
+    - id: competitor-scan
+      objective: 识别竞品活动做法、拥挤渠道和差异机会
+      agent: research-competitor
+      depends_on: []
+      requires: [project-brief]
+      produces: {id: competitor-scan, type: competitor-report}
+      acceptance_criteria: [覆盖主要竞品, 结论有证据, 明确可借鉴与应避免项]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
+    - id: growth-strategy
+      objective: 设计获客渠道、漏斗、实验和转化指标
+      agent: marketing-growth-hacker
+      depends_on: [market-insight, competitor-scan]
+      requires: [project-brief, market-insight, competitor-scan]
+      produces: {id: growth-strategy, type: growth-plan}
+      acceptance_criteria: [渠道匹配目标受众, 漏斗指标完整, 每项实验有成功与停止标准]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
+    - id: content-strategy
+      objective: 基于已确定增长渠道形成信息架构、内容和素材计划
+      agent: marketing-content-creator
       depends_on: [growth-strategy]
-      tasks:
-        - id: risk-check
-          agent: risk-manager
-          inputs:
-            - 营销策略
-            - 内容文案
-          outputs:
-            - 合规风险清单
-            - 应对预案
-          estimated_effort: small
-
-  quality_gates:
-    - "目标用户画像清晰"
-    - "转化漏斗完整"
-    - "预算 ROI 可计算"
-    - "合规风险可控"
+      requires: [project-brief, market-insight, growth-strategy]
+      produces: {id: content-strategy, type: content-plan}
+      acceptance_criteria: [信息主张与用户痛点一致, 内容适配选择渠道, 包含CTA和测量方式]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
+    - id: campaign-plan
+      objective: 将增长与内容策略编排成活动节奏和责任清单
+      agent: marketing-campaign-planner
+      depends_on: [content-strategy]
+      requires: [growth-strategy, content-strategy]
+      produces: {id: campaign-plan, type: campaign-plan}
+      acceptance_criteria: [时间线与依赖明确, 每项动作有负责人和指标, 素材与渠道一一对应]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
+    - id: campaign-budget
+      objective: 计算预算、预期转化、CAC和敏感性区间
+      agent: finance-financial-analyst
+      depends_on: [campaign-plan]
+      requires: [growth-strategy, campaign-plan]
+      produces: {id: campaign-budget, type: financial-model}
+      acceptance_criteria: [预算与活动动作一致, CAC和ROI可复算, 给出悲观基准乐观情景]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
+    - id: compliance-review
+      objective: 审查活动、文案和预算中的合规与声誉风险
+      agent: risk-manager
+      depends_on: [campaign-budget]
+      requires: [content-strategy, campaign-plan, campaign-budget]
+      produces: {id: campaign-risk-review, type: risk-review}
+      acceptance_criteria: [覆盖平台规则与广告合规, 关键风险有缓解措施, 需法律确认项明确]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
+    - id: campaign-integration
+      objective: 整合全部已通过产物为执行手册
+      agent: core-aggregator
+      depends_on: [compliance-review]
+      requires: [market-insight, competitor-scan, growth-strategy, content-strategy, campaign-plan, campaign-budget, campaign-risk-review]
+      produces: {id: campaign-deliverable, type: integrated-deliverable}
+      acceptance_criteria: [目标渠道内容预算一致, 风险控制已进入执行清单, 所有关键结论可追溯]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: fail_workflow

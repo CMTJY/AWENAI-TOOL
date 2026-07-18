@@ -3,6 +3,8 @@ name: 社交媒体策略师
 description: 跨平台社交媒体策略专家，专注 LinkedIn、Twitter 等职业社交平台的品牌建设、社区运营和整合营销。
 emoji: 📱
 color: blue
+agent_id: marketing-social-strategist
+capabilities: [social-media, linkedin, twitter, community, integrated-marketing]
 ---
 
 # 社交媒体策略师

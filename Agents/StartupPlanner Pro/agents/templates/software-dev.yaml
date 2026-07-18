@@ -1,123 +1,117 @@
-# 软件开发工作流
-# 适用:从 0 到 1 开发一个软件工具/应用/网站
-
+schema_version: "2.0"
 workflow:
   id: software-dev
-  name: 软件开发工作流
-  version: "1.0"
-  description: 从需求到上线的完整软件开发协作流程
+  name: 软件交付协作流
+  version: "3.0"
+  goal: 从冻结需求到通过独立代码审查、测试验收并具备发布条件的软件交付物
+  system_inputs: [project-brief]
+  final_artifacts: [release-readiness-package]
+  controls:
+    task_packet_required: true
+    file_scope_required_for_code: true
+    verification_evidence_required: true
+    implementation_review_gates: [specification-compliance, code-quality]
+    qa_is_not_code_reviewer: true
+  tasks:
+    - id: requirements
+      objective: 冻结范围、用户故事、非目标和可验证验收标准
+      agent: product-pm
+      depends_on: []
+      requires: [project-brief]
+      produces: {id: product-requirements, type: prd}
+      acceptance_criteria: [核心用户故事完整, 每个故事有可验证验收标准, 明确非目标与约束]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
 
-  stages:
+    - id: architecture
+      objective: 设计架构、稳定契约、实现 DAG、文件边界和风险验证方案
+      agent: tech-architect
+      depends_on: [requirements]
+      requires: [product-requirements]
+      required_skills: [brainstorming, writing-plans, verification-before-completion]
+      produces: {id: technical-design, type: technical-architecture}
+      acceptance_criteria: [架构覆盖功能与非功能需求, API和数据模型明确, 实现任务与文件边界无冲突, 关键风险有验证方案]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
 
-    # ====== 阶段 1:需求分析 ======
-    - stage: 需求分析
-      parallel: false
-      tasks:
-        - id: req-collect
-          agent: product-pm
-          inputs:
-            - 用户原始需求
-          outputs:
-            - 需求清单
-            - 用户故事
-            - 验收标准
-          estimated_effort: small
+    - id: test-strategy
+      objective: 在实现前建立分层测试策略、验收映射、环境与测试数据计划
+      agent: tech-qa
+      depends_on: [requirements, architecture]
+      requires: [product-requirements, technical-design]
+      required_skills: [test-driven-development, verification-before-completion]
+      produces: {id: test-strategy, type: test-plan}
+      acceptance_criteria: [验收标准映射到测试层级, 定义P0与P1用例, 环境数据与非功能验证可执行]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
 
-    # ====== 阶段 2:技术方案 ======
-    - stage: 技术方案
-      parallel: false
-      depends_on: [req-collect]
-      tasks:
-        - id: tech-design
-          agent: tech-architect
-          inputs:
-            - 需求清单
-          outputs:
-            - 技术选型
-            - 系统架构图
-            - 模块划分
-            - 数据模型初稿
-          estimated_effort: medium
+    - id: backend
+      objective: 在授权文件范围内实现后端、数据库和 API，并提交验证证据
+      agent: tech-backend-dev
+      depends_on: [architecture, test-strategy]
+      requires: [product-requirements, technical-design, test-strategy]
+      required_skills: [test-driven-development, verification-before-completion]
+      file_scope: required
+      produces: {id: backend-package, type: backend-code}
+      acceptance_criteria: [实现约定API, 包含关键自动化测试, 数据迁移可执行, 验证证据可复现]
+      reviewer: tech-code-reviewer
+      review_gates: [specification-compliance, code-quality]
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
 
-    # ====== 阶段 3:并行实现 ======
-    - stage: 并行实现
-      parallel: true
-      depends_on: [tech-design]
-      tasks:
-        - id: backend-impl
-          agent: tech-backend-dev
-          inputs:
-            - 系统架构图
-            - 数据模型
-          outputs:
-            - API 接口文档
-            - 数据库 Schema
-            - 核心后端代码
-          estimated_effort: large
+    - id: frontend
+      objective: 在授权文件范围内实现 Web 体验、状态、可访问性和前端测试
+      agent: tech-frontend-dev
+      depends_on: [architecture, test-strategy]
+      requires: [product-requirements, technical-design, test-strategy]
+      required_skills: [frontend-design, ui-ux-pro-max, test-driven-development, verification-before-completion]
+      file_scope: required
+      produces: {id: frontend-package, type: frontend-code}
+      acceptance_criteria: [覆盖核心用户故事与状态, API调用符合契约, 满足可访问性和响应式要求, 关键交互可自动验证]
+      reviewer: tech-code-reviewer
+      review_gates: [specification-compliance, code-quality]
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
 
-        - id: frontend-impl
-          agent: tech-frontend-dev
-          inputs:
-            - API 接口文档
-            - 用户故事
-          outputs:
-            - 页面组件代码
-            - 状态管理
-            - 样式文件
-          estimated_effort: large
+    - id: mobile
+      objective: 在授权文件范围内实现移动端场景、平台行为和真机验证
+      agent: tech-mobile-dev
+      depends_on: [architecture, test-strategy]
+      requires: [product-requirements, technical-design, test-strategy]
+      required_skills: [ui-ux-pro-max, test-driven-development, verification-before-completion]
+      file_scope: required
+      produces: {id: mobile-package, type: mobile-code}
+      when: project-brief.channels contains mobile
+      optional: true
+      acceptance_criteria: [覆盖移动端核心场景, API调用符合契约, 平台权限与生命周期正确, 真机或等价环境证据可复现]
+      reviewer: tech-code-reviewer
+      review_gates: [specification-compliance, code-quality]
+      retry: {max_attempts: 2}
+      failure_policy: continue
 
-        - id: mobile-impl
-          agent: tech-mobile-dev
-          optional: true  # 仅当需要移动端
-          inputs:
-            - 系统架构图
-          outputs:
-            - 移动端代码
-          estimated_effort: large
+    - id: integration-test
+      objective: 对已通过代码审查的实现执行集成、端到端、验收和非功能测试
+      agent: tech-qa
+      depends_on: [backend, frontend]
+      requires: [product-requirements, technical-design, test-strategy, backend-package, frontend-package]
+      required_skills: [systematic-debugging, verification-before-completion]
+      produces: {id: test-report, type: test-report}
+      acceptance_criteria: [所有P0和P1用例通过, 无未披露阻断缺陷, 验收与非功能结果可复现]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
 
-    # ====== 阶段 4:测试 ======
-    - stage: 测试验证
-      parallel: false
-      depends_on: [backend-impl, frontend-impl]
-      tasks:
-        - id: qa-test
-          agent: tech-qa
-          inputs:
-            - 后端代码
-            - 前端代码
-            - 用户故事
-          outputs:
-            - 测试用例
-            - 测试报告
-            - 缺陷清单
-          estimated_effort: medium
-
-    # ====== 阶段 5:部署 ======
-    - stage: 部署上线
-      parallel: false
-      depends_on: [qa-test]
-      tasks:
-        - id: deploy
-          agent: tech-devops
-          inputs:
-            - 后端代码
-            - 前端代码
-          outputs:
-            - Dockerfile
-            - CI/CD 配置
-            - 部署文档
-          estimated_effort: small
-
-  mvp_shortcut:
-    description: 跳过完整流程,只做 MVP
-    stages:
-      - tech-architect(轻量)
-      - tech-backend-dev + tech-frontend-dev(并行)
-      - tech-qa(冒烟)
-      - tech-devops(快速部署)
-
-  quality_gates:
-    - "PRD 完整且可执行"
-    - "技术方案通过评审"
-    - "所有 P0/P1 测试用例通过"
-    - "部署文档齐全"
+    - id: release-readiness
+      objective: 生成可重复构建与部署方案、健康检查、监控、回滚和发布就绪结论
+      agent: tech-devops
+      depends_on: [integration-test]
+      requires: [technical-design, backend-package, frontend-package, test-report]
+      required_skills: [verification-before-completion, finishing-a-development-branch]
+      produces: {id: release-readiness-package, type: deployment-package}
+      acceptance_criteria: [构建部署步骤可重复, 包含健康检查与可观测性, 回滚与故障恢复流程明确, 未经授权不执行生产变更]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: fail_workflow

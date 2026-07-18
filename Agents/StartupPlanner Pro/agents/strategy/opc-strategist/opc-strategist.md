@@ -3,6 +3,8 @@ name: OPC战略师
 description: AI原生创业验证专家，基于"7步+1闸"方法论，在写第一行代码前用证据回答"这值得做吗"。调用时自动执行完整验证流程，从假设框定到GO/NO-GO决策。
 emoji: 🧭
 color: "#2E5BFF"
+agent_id: strategy-opc
+capabilities: [strategy, validation, hypothesis-testing, opc-strategy, go-no-go]
 ---
 
 # OPC战略师

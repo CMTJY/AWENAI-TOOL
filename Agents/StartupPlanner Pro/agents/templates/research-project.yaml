@@ -1,78 +1,69 @@
-# 综合调研工作流
-# 适用:对一个领域/话题/问题做全面深入调研
-
+schema_version: "2.0"
 workflow:
   id: research-project
-  name: 综合调研工作流
-  version: "1.0"
-  description: 多维度交叉验证的深度调研流程
-
-  stages:
-
-    # ====== 阶段 1:问题框定 ======
-    - stage: 问题框定
-      parallel: false
-      tasks:
-        - id: scope
-          agent: core-task-planner
-          inputs:
-            - 调研主题
-          outputs:
-            - 调研边界
-            - 关键问题清单
-          estimated_effort: small
-
-    # ====== 阶段 2:多维调研 ======
-    - stage: 多维调研
-      parallel: true
-      depends_on: [scope]
-      tasks:
-        - id: market-dim
-          agent: research-market
-          inputs:
-            - 关键问题清单
-          outputs:
-            - 市场数据
-            - 趋势分析
-          estimated_effort: medium
-
-        - id: competitor-dim
-          agent: research-competitor
-          inputs:
-            - 关键问题清单
-          outputs:
-            - 竞品全景
-            - 差异化矩阵
-          estimated_effort: medium
-
-        - id: user-dim
-          agent: research-analyst
-          inputs:
-            - 关键问题清单
-          outputs:
-            - 用户调研
-            - 需求洞察
-          estimated_effort: medium
-
-    # ====== 阶段 3:综合分析 ======
-    - stage: 综合分析
-      parallel: false
-      depends_on: [market-dim, competitor-dim, user-dim]
-      tasks:
-        - id: synthesis
-          agent: core-aggregator
-          inputs:
-            - 市场数据
-            - 竞品分析
-            - 用户洞察
-          outputs:
-            - 综合调研报告
-            - 核心洞察
-            - 行动建议
-          estimated_effort: medium
-
-  quality_gates:
-    - "数据来源可追溯"
-    - "至少 2 个独立来源交叉验证"
-    - "核心洞察不超过 5 条"
-    - "行动建议可执行"
+  name: 多源调研协作流
+  version: "2.0"
+  goal: 形成来源可追溯、经过交叉验证的综合调研报告
+  system_inputs: [project-brief]
+  final_artifacts: [research-deliverable]
+  tasks:
+    - id: research-scope
+      objective: 定义调研边界、关键问题、证据标准和时效要求
+      agent: research-analyst
+      depends_on: []
+      requires: [project-brief]
+      produces: {id: research-scope, type: research-plan}
+      acceptance_criteria: [问题可回答, 范围与非范围明确, 定义来源和时效标准]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
+    - id: market-dimension
+      objective: 收集市场规模、趋势和用户细分证据
+      agent: research-market
+      depends_on: [research-scope]
+      requires: [research-scope]
+      produces: {id: market-dimension, type: market-report}
+      acceptance_criteria: [核心数据有至少两个来源, 标注口径差异, 标注日期]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
+    - id: competitor-dimension
+      objective: 收集竞争格局、替代方案和差异证据
+      agent: research-competitor
+      depends_on: [research-scope]
+      requires: [research-scope]
+      produces: {id: competitor-dimension, type: competitor-report}
+      acceptance_criteria: [覆盖直接与间接替代, 对比口径一致, 关键事实有来源]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
+    - id: general-evidence
+      objective: 补充政策、技术、商业和反方证据
+      agent: research-analyst
+      depends_on: [research-scope]
+      requires: [research-scope]
+      produces: {id: general-evidence, type: evidence-pack}
+      acceptance_criteria: [同时包含支持与反对证据, 来源质量分级, 区分事实和推断]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
+    - id: evidence-reconciliation
+      objective: 处理来源冲突、口径差异和证据缺口
+      agent: strategy-analyst
+      depends_on: [market-dimension, competitor-dimension, general-evidence]
+      requires: [market-dimension, competitor-dimension, general-evidence]
+      produces: {id: evidence-ledger, type: evidence-ledger}
+      acceptance_criteria: [逐项记录冲突, 给出采用口径及理由, 未解决缺口显式保留]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
+    - id: research-integration
+      objective: 将已核验的证据和冲突账本整合为调研报告
+      agent: core-aggregator
+      depends_on: [evidence-reconciliation]
+      requires: [research-scope, market-dimension, competitor-dimension, general-evidence, evidence-ledger]
+      produces: {id: research-deliverable, type: integrated-deliverable}
+      acceptance_criteria: [回答全部关键问题, 核心结论可追溯, 局限与下一步验证明确]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: fail_workflow

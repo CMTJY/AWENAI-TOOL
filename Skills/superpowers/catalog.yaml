@@ -1,0 +1,22 @@
+schema_version: "1.0"
+collection: superpowers
+baseline: "superpowers-portable-2026-07-18"
+
+skills:
+  - {name: using-superpowers, category: entry, audience: [controller, maintainer]}
+  - {name: superpowers-bootstrap, category: maintenance, audience: [maintainer, controller]}
+  - {name: brainstorming, category: design, audience: [architect, frontend]}
+  - {name: writing-plans, category: planning, audience: [architect, controller]}
+  - {name: executing-plans, category: execution, audience: [controller]}
+  - {name: subagent-driven-development, category: orchestration, audience: [controller]}
+  - {name: dispatching-parallel-agents, category: orchestration, audience: [controller]}
+  - {name: using-git-worktrees, category: workspace, audience: [controller, devops]}
+  - {name: test-driven-development, category: implementation, audience: [developer, qa]}
+  - {name: systematic-debugging, category: implementation, audience: [developer, qa, devops, reviewer]}
+  - {name: requesting-code-review, category: review, audience: [controller, architect, reviewer]}
+  - {name: receiving-code-review, category: review, audience: [developer]}
+  - {name: verification-before-completion, category: quality, audience: [all]}
+  - {name: finishing-a-development-branch, category: delivery, audience: [controller, devops]}
+  - {name: frontend-design, category: ui, audience: [frontend]}
+  - {name: ui-ux-pro-max, category: ui, audience: [frontend, mobile]}
+  - {name: writing-skills, category: maintenance, audience: [skill-maintainer]}

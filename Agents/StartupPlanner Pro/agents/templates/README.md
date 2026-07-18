@@ -1,39 +1,23 @@
-# 工作流模板库
+# 工作流模板库 v2
 
-存放可复用的多 agent 协作流程模板,主控可按用户任务自动匹配。
+这里存放供不同宿主 Agent 读取的通用参考任务 DAG。主控将模板转换为根目录 `AGENTS.md` 定义的 Task Packet，并使用当前宿主已有的原生委派能力执行。
 
-## 目录
+## 预设流程
 
-- [software-dev.yaml](software-dev.yaml) — 软件开发工作流
-- [marketing-campaign.yaml](marketing-campaign.yaml) — 营销活动工作流
-- [research-project.yaml](research-project.yaml) — 综合调研工作流
-- [bp-planning.yaml](bp-planning.yaml) — 商业计划书工作流
-- [custom.md](custom.md) — 自定义工作流指南
+- [bp-planning.yaml](bp-planning.yaml)：创业验证与商业计划协作流
+- [software-dev.yaml](software-dev.yaml)：软件交付协作流，包含代码双门审、QA 验收和发布就绪
+- [marketing-campaign.yaml](marketing-campaign.yaml)：营销活动协作流
+- [research-project.yaml](research-project.yaml)：多源调研协作流
+- [custom.md](custom.md)：自定义工作流指南
 
-## 格式规范
+## 关键约束
 
-```yaml
-workflow:
-  id: {唯一标识}
-  name: {可读名}
-  description: {简介}
+- 并行性只由 `depends_on` DAG、文件范围和共享状态共同决定。
+- `depends_on` 引用任务 ID，`requires` 引用产物 ID或系统输入。
+- 每个产物有且只有一个权威生产者。
+- 每个关键任务有非执行者 reviewer 和可执行验收标准。
+- 代码任务必须声明 `file_scope`、`required_skills` 和验证证据要求。
+- 实现任务由 `tech-code-reviewer` 依次执行规格符合性与代码质量审核；`tech-qa` 负责测试验收，二者不得互换。
+- 工作流必须无环，最终产物必须从系统输入可达。
 
-  stages:
-    - stage: {阶段名}
-      parallel: {true/false}
-      depends_on: [前置 task_id 列表]
-      tasks:
-        - id: {task_id}
-          agent: {agent_id}
-          inputs: [...]
-          outputs: [...]
-          optional: {true/false}
-          estimated_effort: {trivial/small/medium/large}
-```
-
-## 添加新工作流
-
-1. 在本目录创建新 yaml 文件
-2. 遵循上述格式
-3. 在 README.md 中添加链接
-4. 在 `config/routing-rules.yaml` 中引用(可选)
+修改模板后必须验证：角色与路由引用存在、DAG 无环、产物生产者唯一、执行者与审核者不同、所需技能存在于对应角色本地索引。

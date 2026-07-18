@@ -1,0 +1,16 @@
+schema_version: "1.0"
+baseline_id: "superpowers-portable-2026-07-18"
+created: "2026-07-18"
+content_scope: "All files under Skills/superpowers except BASELINE.yaml"
+collection_hash_algorithm: "SHA-256 of UTF-8 lines: relative-posix-path TAB lowercase-file-sha256 LF, sorted by relative path"
+collection_sha256: "d9d9dc3757760089c43b3fa01e6fa731117c663085105a30b8ecb428e775a45c"
+skill_count: 17
+validation:
+  quick_validate: "17/17 passed with UTF-8 mode"
+  local_markdown_links: "all resolved"
+  catalog_entries: 17
+copy_policy:
+  mode: "physical-copy"
+  symlinks: false
+  external_runtime_dependencies: false
+  target_copies_are_independently_maintained: true

@@ -1,774 +1,212 @@
-# 智能体协作规范
-
-> **文档信息**
-> - 文档名称：智能体协作规范
-> - 版本号：v1.0
-> - 更新日期：YYYY-MM-DD
-> - 适用对象：AI智能体开发团队、产品经理、系统架构师
-
----
-
-## 目录
-
-1. [规范概述](#1-规范概述)
-2. [部门调用规范](#2-部门调用规范)
-3. [数据传递格式](#3-数据传递格式)
-4. [质量门禁标准](#4-质量门禁标准)
-5. [协作流程规范](#5-协作流程规范)
-6. [异常处理机制](#6-异常处理机制)
-7. [监控与审计](#7-监控与审计)
-8. [附录](#8-附录)
-
----
-
-## 1. 规范概述
-
-### 1.1 规范目的
-
-本规范旨在：
-- 统一智能体间协作的标准和接口
-- 确保数据传递的准确性和一致性
-- 建立质量门禁，保障输出质量
-- 规范异常处理，提升系统稳定性
-- 提供监控审计能力，确保可追溯
-
-### 1.2 适用范围
-
-| 范围 | 说明 |
-|------|------|
-| **智能体类型** | 任务型智能体、知识型智能体、决策型智能体 |
-| **协作场景** | 跨部门协作、多智能体协作、人机协作 |
-| **数据类型** | 结构化数据、非结构化数据、流式数据 |
-| **交互模式** | 同步调用、异步调用、发布订阅 |
-
-### 1.3 核心术语
-
-| 术语 | 定义 |
-|------|------|
-| **智能体（Agent）** | 具备感知、决策、执行能力的自主系统 |
-| **部门（Department）** | 智能体的逻辑分组，对应业务领域 |
-| **任务（Task）** | 智能体执行的独立工作单元 |
-| **工作流（Workflow）** | 多个任务组成的业务流程 |
-| **上下文（Context）** | 任务执行所需的环境信息和历史状态 |
-| **质量门禁（Quality Gate）** | 任务流转前必须满足的质量标准 |
-
----
-
-## 2. 部门调用规范
-
-### 2.1 部门架构
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        协调层 (Orchestrator)                  │
-├─────────────────────────────────────────────────────────────┤
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐    │
-│  │ 市场部门  │  │ 产品部门  │  │ 技术部门  │  │ 运营部门  │    │
-│  │ (Market) │  │(Product) │  │  (Tech)  │  │(Operate) │    │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘    │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐    │
-│  │ 财务部门  │  │ 法务部门  │  │ 人力部门  │  │ 客服部门  │    │
-│  │(Finance) │  │ (Legal)  │  │   (HR)   │  │(Service) │    │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘    │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### 2.2 部门定义
-
-| 部门代码 | 部门名称 | 职责范围 | 核心能力 |
-|----------|----------|----------|----------|
-| MKT | 市场部门 | 市场调研、竞品分析、营销策略 | 市场洞察、趋势预测 |
-| PRD | 产品部门 | 产品规划、需求分析、用户体验 | 产品设计、需求管理 |
-| TEC | 技术部门 | 技术架构、开发实现、系统运维 | 技术实现、架构设计 |
-| OPS | 运营部门 | 用户运营、内容运营、活动运营 | 运营策略、数据分析 |
-| FIN | 财务部门 | 财务规划、预算管理、投融资 | 财务建模、风险评估 |
-| LEG | 法务部门 | 合规审查、合同管理、知识产权 | 法律分析、风险识别 |
-| HRM | 人力部门 | 人才招聘、绩效管理、组织发展 | 人才评估、组织设计 |
-| CSR | 客服部门 | 客户服务、问题处理、满意度管理 | 服务交付、情感分析 |
-
-### 2.3 调用协议
-
-#### 2.3.1 调用方式
-
-| 调用方式 | 适用场景 | 特点 | 示例 |
-|----------|----------|------|------|
-| **同步调用** | 需要即时响应 | 阻塞等待、实时返回 | 实时查询 |
-| **异步调用** | 耗时任务 | 非阻塞、回调通知 | 报告生成 |
-| **发布订阅** | 广播通知 | 一对多、解耦 | 状态变更 |
-| **管道流** | 数据流处理 | 流式传输、实时处理 | 实时分析 |
-
-#### 2.3.2 调用接口规范
-
-**请求格式**：
-```json
-{
-  "request_id": "req_20250101120000_001",
-  "timestamp": "2025-01-01T12:00:00Z",
-  "caller": {
-    "department": "PRD",
-    "agent_id": "prd_agent_001",
-    "version": "1.2.0"
-  },
-  "callee": {
-    "department": "MKT",
-    "agent_id": "mkt_agent_002",
-    "version": "1.1.0"
-  },
-  "task": {
-    "type": "market_research",
-    "name": "目标市场调研",
-    "priority": "high",
-    "deadline": "2025-01-03T12:00:00Z"
-  },
-  "input": {
-    "target_market": "SaaS财税软件",
-    "focus_areas": ["市场规模", "竞争格局", "用户需求"],
-    "output_format": "structured_report"
-  },
-  "context": {
-    "session_id": "sess_20250101110000_001",
-    "previous_tasks": ["task_001", "task_002"],
-    "business_context": {
-      "project_stage": "pre_a_round",
-      "industry": "enterprise_software"
-    }
-  }
-}
-```
-
-**响应格式**：
-```json
-{
-  "request_id": "req_20250101120000_001",
-  "timestamp": "2025-01-01T12:05:00Z",
-  "status": "success",
-  "callee": {
-    "department": "MKT",
-    "agent_id": "mkt_agent_002"
-  },
-  "result": {
-    "task_status": "completed",
-    "output": {
-      "report_id": "rpt_20250101120500_001",
-      "summary": "目标市场规模约200亿元，年增长率25%...",
-      "details": {
-        "tam": "1000亿元",
-        "sam": "200亿元",
-        "som": "20亿元"
-      },
-      "confidence": 0.85,
-      "data_sources": ["艾瑞咨询2024", "国家统计局"]
-    },
-    "quality_score": 92,
-    "processing_time_ms": 300000
-  },
-  "metrics": {
-    "token_usage": 15000,
-    "api_calls": 5,
-    "data_volume_kb": 256
-  }
-}
-```
-
-### 2.4 调用权限矩阵
-
-| 调用方 \ 被调用方 | MKT | PRD | TEC | OPS | FIN | LEG | HRM | CSR |
-|-------------------|-----|-----|-----|-----|-----|-----|-----|-----|
-| **MKT** | - | R | R | R | R | R | - | R |
-| **PRD** | R | - | RW | R | R | R | - | R |
-| **TEC** | R | R | - | R | R | - | - | R |
-| **OPS** | R | R | R | - | R | R | R | RW |
-| **FIN** | R | R | R | R | - | R | R | R |
-| **LEG** | R | R | R | R | R | - | R | R |
-| **HRM** | - | - | - | R | R | R | - | R |
-| **CSR** | R | R | R | RW | R | R | R | - |
-
-*注：R=只读，RW=读写，-=无权限*
-
----
-
-## 3. 数据传递格式
-
-### 3.1 数据类型定义
-
-| 数据类型 | 代码 | 描述 | 示例 |
-|----------|------|------|------|
-| **文本** | TEXT | 纯文本内容 | "市场调研报告" |
-| **结构化** | STRUCT | JSON/XML结构化数据 | {"key": "value"} |
-| **表格** | TABLE | 行列结构数据 | CSV/Excel |
-| **文档** | DOC | 富文本文档 | Word/PDF/Markdown |
-| **图像** | IMAGE | 图片数据 | PNG/JPG |
-| **音频** | AUDIO | 音频数据 | MP3/WAV |
-| **视频** | VIDEO | 视频数据 | MP4/AVI |
-| **流式** | STREAM | 实时数据流 | WebSocket |
-
-### 3.2 标准数据包格式
-
-```json
-{
-  "metadata": {
-    "package_id": "pkg_20250101120000_001",
-    "version": "1.0.0",
-    "created_at": "2025-01-01T12:00:00Z",
-    "created_by": "mkt_agent_001",
-    "data_classification": "internal",
-    "retention_days": 365
-  },
-  "header": {
-    "data_type": "STRUCT",
-    "schema_version": "2.1.0",
-    "record_count": 100,
-    "checksum": "sha256:abc123...",
-    "encoding": "UTF-8"
-  },
-  "body": {
-    "schema": {
-      "fields": [
-        {"name": "id", "type": "string", "required": true},
-        {"name": "value", "type": "number", "required": true},
-        {"name": "timestamp", "type": "datetime", "required": true}
-      ]
-    },
-    "records": [
-      {"id": "001", "value": 100, "timestamp": "2025-01-01T12:00:00Z"}
-    ]
-  },
-  "attachments": [
-    {
-      "attachment_id": "att_001",
-      "type": "DOC",
-      "name": "详细报告.pdf",
-      "size_bytes": 1048576,
-      "checksum": "sha256:def456..."
-    }
-  ],
-  "lineage": {
-    "source_systems": ["crm", "erp"],
-    "transformations": ["clean", "enrich"],
-    "upstream_packages": ["pkg_20250101110000_001"]
-  }
-}
-```
-
-### 3.3 业务数据标准
-
-#### 3.3.1 市场数据
-
-```json
-{
-  "market_data": {
-    "market_size": {
-      "tam": {"value": 1000, "unit": "亿元", "year": 2024},
-      "sam": {"value": 200, "unit": "亿元", "year": 2024},
-      "som": {"value": 20, "unit": "亿元", "year": 2027, "type": "forecast"}
-    },
-    "growth_rate": {
-      "cagr": 0.25,
-      "period": "2024-2027"
-    },
-    "segments": [
-      {
-        "name": "中小企业",
-        "size": 120,
-        "growth": 0.30,
-        "share": 0.60
-      }
-    ],
-    "sources": [
-      {"name": "艾瑞咨询", "report": "2024年中国SaaS市场研究报告"}
-    ]
-  }
-}
-```
-
-#### 3.3.2 竞品数据
-
-```json
-{
-  "competitor_data": {
-    "competitors": [
-      {
-        "name": "竞品A",
-        "founded": 2018,
-        "funding": {"total": "5亿元", "latest_round": "C轮"},
-        "metrics": {
-          "users": 100000,
-          "revenue": "2亿元/年",
-          "market_share": 0.30
-        },
-        "strengths": ["品牌知名度高", "渠道覆盖广"],
-        "weaknesses": ["产品体验一般", "价格偏高"],
-        "differentiation": "我们的AI能力更强"
-      }
-    ]
-  }
-}
-```
-
-#### 3.3.3 财务数据
-
-```json
-{
-  "financial_data": {
-    "historical": {
-      "2022": {"revenue": 100, "cost": 150, "profit": -50},
-      "2023": {"revenue": 300, "cost": 350, "profit": -50},
-      "2024": {"revenue": 800, "cost": 700, "profit": 100}
-    },
-    "forecast": {
-      "2025": {"revenue": 2000, "cost": 1500, "profit": 500},
-      "2026": {"revenue": 5000, "cost": 3500, "profit": 1500}
-    },
-    "unit_economics": {
-      "cac": 500,
-      "ltv": 3200,
-      "ltv_cac_ratio": 6.4,
-      "payback_months": 3,
-      "gross_margin": 0.80
-    }
-  }
-}
-```
-
-### 3.4 数据验证规则
-
-| 验证类型 | 规则 | 错误处理 |
-|----------|------|----------|
-| **格式验证** | 符合JSON Schema | 返回格式错误 |
-| **必填验证** | 必填字段不为空 | 返回缺失字段 |
-| **类型验证** | 数据类型匹配 | 返回类型错误 |
-| **范围验证** | 数值在合理范围 | 返回范围错误 |
-| **引用验证** | 外部引用有效 | 返回引用错误 |
-| **一致性验证** | 内部数据一致 | 返回一致性错误 |
-
----
-
-## 4. 质量门禁标准
-
-### 4.1 质量维度
-
-| 维度 | 权重 | 说明 | 评估方法 |
-|------|------|------|----------|
-| **准确性** | 30% | 数据准确、逻辑正确 | 事实核查、交叉验证 |
-| **完整性** | 25% | 信息完整、无遗漏 | 清单检查、覆盖度分析 |
-| **一致性** | 20% | 前后一致、无矛盾 | 逻辑检查、数据比对 |
-| **时效性** | 15% | 数据新鲜、及时更新 | 时间戳检查、版本控制 |
-| **可用性** | 10% | 格式规范、易于使用 | 格式验证、可读性检查 |
-
-### 4.2 质量评分标准
-
-| 等级 | 分数 | 说明 | 处理策略 |
-|------|------|------|----------|
-| **优秀** | 90-100 | 高质量，可直接使用 | 自动通过 |
-| **良好** | 80-89 | 质量良好，轻微问题 | 自动通过，记录问题 |
-| **合格** | 70-79 | 基本可用，需要优化 | 人工审核后通过 |
-| **不合格** | 60-69 | 存在明显问题 | 退回修改 |
-| **严重缺陷** | <60 | 无法使用 | 拒绝通过 |
-
-### 4.3 部门特定质量标准
-
-#### 4.3.1 市场部门
-
-| 检查项 | 标准 | 权重 |
-|--------|------|------|
-| 数据来源可靠性 | 权威来源占比>80% | 25% |
-| 数据时效性 | 数据年龄<12个月 | 20% |
-| 市场规模合理性 | 与行业报告偏差<20% | 25% |
-| 竞品信息完整性 | 覆盖主要竞品 | 15% |
-| 分析深度 | 有洞察和趋势判断 | 15% |
-
-#### 4.3.2 产品部门
-
-| 检查项 | 标准 | 权重 |
-|--------|------|------|
-| 需求分析完整性 | 覆盖核心场景 | 25% |
-| 用户画像准确性 | 有真实数据支撑 | 20% |
-| 功能设计合理性 | 符合用户习惯 | 25% |
-| 技术可行性 | 技术评估通过 | 15% |
-| 竞品对标充分性 | 有差异化分析 | 15% |
-
-#### 4.3.3 技术部门
-
-| 检查项 | 标准 | 权重 |
-|--------|------|------|
-| 架构设计合理性 | 满足性能要求 | 25% |
-| 代码质量 | 通过代码审查 | 20% |
-| 测试覆盖率 | 覆盖率>80% | 25% |
-| 文档完整性 | 核心文档齐全 | 15% |
-| 安全合规性 | 通过安全扫描 | 15% |
-
-#### 4.3.4 财务部门
-
-| 检查项 | 标准 | 权重 |
-|--------|------|------|
-| 假设合理性 | 假设有依据 | 25% |
-| 计算准确性 | 公式正确 | 25% |
-| 逻辑一致性 | 勾稽关系正确 | 20% |
-| 预测合理性 | 符合行业规律 | 15% |
-| 风险披露 | 充分披露风险 | 15% |
-
-### 4.4 质量门禁流程
-
-```
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│   任务提交   │ → │   自动检查   │ → │   质量评分   │ → │   门禁决策   │
-└─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘
-                          ↓
-                   ┌─────────────┐
-                   │  格式验证   │
-                   │  规则验证   │
-                   │  逻辑验证   │
-                   └─────────────┘
-```
-
-**门禁决策矩阵**：
-
-| 质量分数 | 自动决策 | 人工介入 | 处理时限 |
-|----------|----------|----------|----------|
-| 90-100 | 通过 | 否 | 即时 |
-| 80-89 | 通过 | 否 | 即时 |
-| 70-79 | 待定 | 是 | 4小时 |
-| 60-69 | 拒绝 | 是 | 即时 |
-| <60 | 拒绝 | 否 | 即时 |
-
----
-
-## 5. 协作流程规范
-
-### 5.1 标准协作流程
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         标准协作流程                                 │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                     │
-│  ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐         │
-│  │  任务创建 │ → │  任务分配 │ → │  任务执行 │ → │  质量检查 │         │
-│  └─────────┘    └─────────┘    └─────────┘    └─────────┘         │
-│       ↑                                            ↓               │
-│       └──────────────── 任务完成 ←─────────────────┘               │
-│                                                                     │
-│  详细流程：                                                         │
-│  1. 任务创建：定义任务目标、输入、输出、质量标准                    │
-│  2. 任务分配：根据能力匹配分配至合适智能体                          │
-│  3. 任务执行：智能体执行任务，记录日志                              │
-│  4. 质量检查：自动检查+人工审核                                     │
-│  5. 任务完成：输出归档，通知下游                                    │
-│                                                                     │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
-### 5.2 工作流定义
-
-#### 5.2.1 BP生成工作流
+# StartupPlanner Pro v2 智能体协作规范
+
+## 1. 目标
+
+本规范定义团队如何拆解任务、选择角色、装载技能、隔离文件范围、审核产物、处理冲突和完成交付。它与根目录 `AGENTS.md`、能力注册表和工作流模板共同构成通用协议，不依赖某个 AI 工具的专有 Agent 格式。
+
+## 2. 组织与职责
+
+### 2.1 控制面
+
+| 角色 | 负责 | 不负责 |
+|---|---|---|
+| Orchestrator | 状态、依赖调度、技能路由、委派、重试和失败控制 | 领域产物 |
+| Task Planner | DAG、产物、文件边界、验收和失败策略 | 选择或执行角色 |
+| Router | 能力匹配、约束过滤和备选角色 | 拆任务和执行 |
+| Quality Reviewer | 非代码产物与最终交付的独立验收 | 补写原产物 |
+| Aggregator | 整合已通过审核的产物 | 放行不合格产物 |
+
+### 2.2 技术专业面
+
+| 角色 | 责任边界 |
+|---|---|
+| `tech-architect` | 架构、契约、实现 DAG、文件与集成边界 |
+| `tech-backend-dev` | 后端、API、数据、服务端测试和证据 |
+| `tech-frontend-dev` | Web 界面、状态、可访问性、响应式和测试 |
+| `tech-mobile-dev` | 移动平台实现、权限、生命周期和真机验证 |
+| `tech-code-reviewer` | 规格符合性、正确性、安全、性能、兼容、可维护性与测试质量审查 |
+| `tech-qa` | 测试策略、集成、E2E、性能、兼容与验收 |
+| `tech-devops` | 可重复构建、CI/CD、可观测性、回滚与发布就绪 |
+
+专业角色默认平级，不能自行调度其他角色。新增任务、返工和跨部门对齐均由 Orchestrator 记录和调度。
+
+## 3. 角色本地技能
+
+有本地技能的角色按以下顺序工作：
+
+1. 读取自身角色文件；
+2. 读取同目录 `skills/SKILL_INDEX.md`；
+3. 只加载 Task Packet 的 `required_skills` 或触发条件明确匹配的技能；
+4. 按 `SOURCE_MANIFEST.yaml` 记录的冻结副本工作，不读取 StartupPlanner Pro 外部源目录。
+
+角色本地技能是 StartupPlanner Pro 的独立物理副本。仓库级 `Skills/superpowers` 仅是维护来源；同步必须人工审核、复制、更新清单并重新验证，禁止运行时动态继承。
+
+### 3.1 开放式任务的方向门
+
+新创业、BP、从 0 到 1 产品或重大工作流在建立 Project Brief 前必须执行重大歧义扫描。问题 / 品类、目标用户、产品形态或首要市场缺失时，由 Orchestrator 加载私有 `brainstorming` 技能，一次只询问一个关键问题，并在用户确认或明确授权团队代选后生成 `direction-brief`。
+
+方向门没有通过时，领域任务不能进入 `ready`。完整明确的请求、机械修改和已经冻结范围的局部工作不重复提问。详细状态与防回归场景见 [方向发现与用户确认门](direction-discovery.md)。
+
+## 4. Project Brief 与 Task Packet
+
+并行角色使用同一份只读 Project Brief 快照。每个任务必须是可独立执行和验收的工作单元：
 
 ```yaml
-workflow:
-  name: "商业计划书生成"
-  version: "1.0.0"
-  
-  stages:
-    - stage: "市场研究"
-      department: "MKT"
-      tasks:
-        - task: "市场规模分析"
-          input: ["行业", "目标用户"]
-          output: ["TAM/SAM/SOM", "增长趋势"]
-          quality_gate: "market_standard"
-        - task: "竞品分析"
-          input: ["竞品列表"]
-          output: ["竞品对比矩阵", "差异化分析"]
-          quality_gate: "competitor_standard"
-      
-    - stage: "产品规划"
-      department: "PRD"
-      dependencies: ["市场研究"]
-      tasks:
-        - task: "产品定位"
-          input: ["市场研究结果"]
-          output: ["产品定位", "核心功能"]
-          quality_gate: "product_standard"
-        - task: "路线图规划"
-          input: ["产品定位"]
-          output: ["产品路线图"]
-          quality_gate: "roadmap_standard"
-      
-    - stage: "财务建模"
-      department: "FIN"
-      dependencies: ["市场研究", "产品规划"]
-      tasks:
-        - task: "收入预测"
-          input: ["市场规模", "产品定价"]
-          output: ["3年财务预测"]
-          quality_gate: "financial_standard"
-        - task: "融资规划"
-          input: ["财务预测"]
-          output: ["融资需求", "资金使用计划"]
-          quality_gate: "funding_standard"
-      
-    - stage: "文档整合"
-      department: "PRD"
-      dependencies: ["市场研究", "产品规划", "财务建模"]
-      tasks:
-        - task: "BP整合"
-          input: ["各阶段输出"]
-          output: ["完整BP文档"]
-          quality_gate: "bp_standard"
+task_packet:
+  task_id: frontend-checkout
+  objective: 实现结账页面的加载、成功和失败状态
+  selected_agent_id: tech-frontend-dev
+  selected_agent_file: tech/frontend-dev/frontend-dev.md
+  depends_on: [architecture, test-strategy]
+  required_artifacts: [product-requirements, technical-design, test-strategy]
+  expected_artifact: {id: frontend-checkout-package, type: frontend-code}
+  file_scope:
+    allowed: [src/checkout/**, tests/checkout/**]
+    prohibited: [server/**, migrations/**]
+    shared: [package-lock.json]
+  required_skills: [test-driven-development, verification-before-completion]
+  acceptance_criteria:
+    - 三种状态均有可重复验证
+    - API 调用符合冻结契约
+  verification_required: [targeted-tests, build]
+  reviewer: tech-code-reviewer
+  attempt: 1
 ```
 
-### 5.3 任务状态管理
+禁止使用“全部材料”“所有文件”等无法追踪的输入或范围。共享可写文件不能被并行任务同时修改，应归入后续串行集成任务。
 
-| 状态 | 代码 | 说明 | 可转换至 |
-|------|------|------|----------|
-| **待分配** | PENDING | 任务已创建，等待分配 | ASSIGNED |
-| **已分配** | ASSIGNED | 已分配给智能体 | RUNNING |
-| **执行中** | RUNNING | 智能体正在执行 | CHECKING, FAILED |
-| **质检中** | CHECKING | 执行完成，质量检查中 | PASSED, REJECTED |
-| **已通过** | PASSED | 通过质量门禁 | COMPLETED |
-| **已拒绝** | REJECTED | 未通过质量门禁 | RUNNING |
-| **已完成** | COMPLETED | 任务完成 | - |
-| **已失败** | FAILED | 执行失败 | RUNNING |
-| **已取消** | CANCELLED | 任务取消 | - |
+## 5. 依赖、并行与文件所有权
 
-### 5.4 上下文管理
+- 任务 B 消费 A 的产物时，B 必须在 `depends_on` 中声明 A。
+- 所有依赖为 `passed` 或条件性 `skipped` 后，任务才能进入 `ready`。
+- 并行要求同时满足：无数据依赖、无共享可写文件、无共享外部状态、可独立验收。
+- 条件任务未触发时记为 `skipped`，不得伪造空产物。
+- 每个产物只有一个权威生产者；多方意见通过 reconciliation 任务对齐。
+- 架构师负责规划文件边界，Orchestrator 在派发前做冲突检查。
 
-#### 5.4.1 上下文传递
+## 6. Artifact Envelope
 
-```json
-{
-  "context": {
-    "session": {
-      "session_id": "sess_20250101100000_001",
-      "created_at": "2025-01-01T10:00:00Z",
-      "ttl_seconds": 3600
-    },
-    "business": {
-      "project_name": "StartupPlanner",
-      "industry": "SaaS",
-      "stage": "pre_a_round",
-      "target_market": "中小企业财税管理"
-    },
-    "history": [
-      {
-        "task_id": "task_001",
-        "type": "market_research",
-        "output_ref": "pkg_20250101110000_001",
-        "summary": "目标市场规模200亿元"
-      }
-    ],
-    "preferences": {
-      "output_language": "zh",
-      "detail_level": "standard",
-      "citation_style": "apa"
-    }
-  }
-}
+角色之间不广播完整对话历史，只传 Project Brief、Task Packet 和必需上游产物：
+
+```yaml
+artifact:
+  schema_version: "2.0"
+  artifact_id: frontend-checkout-package
+  artifact_type: frontend-code
+  producer_agent_id: tech-frontend-dev
+  task_id: frontend-checkout
+  status: complete
+  changed_files: []
+  evidence: []
+  assumptions: []
+  verification:
+    commands: []
+    results: []
+  risks: []
+  review: {status: pending}
 ```
 
-#### 5.4.2 上下文继承规则
+置信度和实现者自评不能代替审核与可复现验证。
 
-| 场景 | 继承策略 | 说明 |
-|------|----------|------|
-| 同会话任务 | 完全继承 | 保留所有上下文 |
-| 子任务 | 选择性继承 | 继承业务上下文，重置执行上下文 |
-| 跨会话任务 | 摘要继承 | 继承关键摘要，不继承详细历史 |
-| 并行任务 | 快照继承 | 基于快照，互不干扰 |
+## 7. 状态机与证据
 
----
+通用任务：
 
-## 6. 异常处理机制
-
-### 6.1 异常分类
-
-| 类别 | 代码 | 说明 | 示例 |
-|------|------|------|------|
-| **输入异常** | INPUT_ERROR | 输入数据问题 | 格式错误、缺失字段 |
-| **执行异常** | EXEC_ERROR | 任务执行失败 | 超时、资源不足 |
-| **质量异常** | QUALITY_ERROR | 未通过质量门禁 | 分数不足、规则违反 |
-| **依赖异常** | DEPEND_ERROR | 依赖任务失败 | 上游任务失败 |
-| **系统异常** | SYSTEM_ERROR | 系统级错误 | 服务不可用 |
-
-### 6.2 异常处理策略
-
-| 异常类型 | 重试策略 | 降级策略 | 通知策略 |
-|----------|----------|----------|----------|
-| 输入异常 | 不重试 | 返回错误详情 | 即时通知调用方 |
-| 执行异常 | 重试3次 | 切换备用智能体 | 重试后通知 |
-| 质量异常 | 不重试 | 人工审核 | 即时通知 |
-| 依赖异常 | 等待依赖 | 标记阻塞 | 依赖解决后通知 |
-| 系统异常 | 指数退避 | 切换可用区 | 即时告警 |
-
-### 6.3 错误响应格式
-
-```json
-{
-  "request_id": "req_20250101120000_001",
-  "timestamp": "2025-01-01T12:00:00Z",
-  "status": "error",
-  "error": {
-    "code": "INPUT_VALIDATION_FAILED",
-    "category": "INPUT_ERROR",
-    "severity": "high",
-    "message": "输入数据验证失败",
-    "details": {
-      "field": "market_size.tam",
-      "issue": "数值超出合理范围",
-      "expected": "0-10000",
-      "actual": "50000"
-    },
-    "suggestion": "请检查市场规模数据单位是否正确",
-    "retryable": false
-  },
-  "debug_info": {
-    "stack_trace": "...",
-    "execution_time_ms": 150,
-    "agent_version": "1.2.0"
-  }
-}
+```text
+pending → ready → running → verifying → reviewing
+                                      ├─ revision → running
+                                      ├─ passed → completed
+                                      └─ failed
 ```
 
-### 6.4 熔断机制
+代码任务：
 
-| 指标 | 阈值 | 动作 |
-|------|------|------|
-| 错误率 | >20% | 触发熔断 |
-| 响应时间 | >10s | 触发降级 |
-| 并发数 | >100 | 触发限流 |
-| 资源使用率 | >90% | 触发扩容 |
-
-**熔断状态**：
-- **关闭**：正常处理请求
-- **打开**：拒绝请求，快速失败
-- **半开**：允许部分请求试探
-
----
-
-## 7. 监控与审计
-
-### 7.1 监控指标
-
-| 类别 | 指标 | 说明 | 采集频率 |
-|------|------|------|----------|
-| **性能** | 响应时间 | 任务处理耗时 | 实时 |
-| **性能** | 吞吐量 | 每秒处理任务数 | 实时 |
-| **质量** | 通过率 | 质量门禁通过率 | 每小时 |
-| **质量** | 平均分数 | 质量评分均值 | 每小时 |
-| **可用性** | 成功率 | 任务成功比例 | 实时 |
-| **可用性** | 错误率 | 任务失败比例 | 实时 |
-| **资源** | CPU使用率 | 计算资源使用 | 实时 |
-| **资源** | 内存使用 | 内存资源使用 | 实时 |
-
-### 7.2 日志规范
-
-```json
-{
-  "timestamp": "2025-01-01T12:00:00.000Z",
-  "level": "INFO",
-  "logger": "agent.collaboration",
-  "message": "任务执行完成",
-  "context": {
-    "request_id": "req_001",
-    "task_id": "task_001",
-    "department": "MKT",
-    "agent_id": "mkt_agent_001"
-  },
-  "metrics": {
-    "duration_ms": 5000,
-    "token_usage": 10000,
-    "quality_score": 85
-  },
-  "trace_id": "trace_001",
-  "span_id": "span_001"
-}
+```text
+running → verifying
+→ specification-compliance-review
+→ code-quality-review
+→ qa-validation
+→ release-readiness
 ```
 
-### 7.3 审计要求
+`verification` 必须记录实际命令或检查、结果、退出状态和无法执行项。状态事件至少包含时间、任务 ID、attempt、产物和原因。
 
-| 审计项 | 保留期限 | 存储位置 |
-|--------|----------|----------|
-| 调用日志 | 1年 | 日志系统 |
-| 输入输出数据 | 90天 | 对象存储 |
-| 质量报告 | 1年 | 数据库 |
-| 配置变更 | 2年 | 版本控制 |
-| 异常记录 | 1年 | 日志系统 |
+## 8. 审核分层
 
-### 7.4 告警规则
+### 8.1 通用产物审核
 
-| 告警名称 | 触发条件 | 通知方式 | 响应时间 |
-|----------|----------|----------|----------|
-| 高错误率 | 错误率>10%持续5分钟 | 短信+邮件 | 5分钟 |
-| 高延迟 | P99延迟>5s持续10分钟 | 邮件+IM | 15分钟 |
-| 质量下降 | 通过率<70%持续1小时 | 邮件 | 1小时 |
-| 系统异常 | 服务不可用 | 电话+短信 | 即时 |
+非代码关键产物由 `core-quality-reviewer` 逐条检查输入、验收标准、证据时效、假设分离、计算一致性和上游冲突。
 
----
+### 8.2 代码 Gate 1：规格符合性
 
-## 8. 附录
+`tech-code-reviewer` 先确认：
 
-### 附录A：API参考
+- 需求和验收标准是否全部覆盖；
+- API、数据、权限、错误和兼容契约是否一致；
+- 是否超出 Task Packet 的文件和功能范围；
+- 实现证据能否定位到具体变更。
 
-#### A.1 任务提交接口
+Gate 1 不通过时停止，不进入代码质量审查。
 
-```http
-POST /api/v1/tasks
-Content-Type: application/json
-Authorization: Bearer {token}
+### 8.3 代码 Gate 2：代码质量
 
-{
-  "department": "MKT",
-  "task_type": "market_research",
-  "input": {...},
-  "context": {...},
-  "callback_url": "https://example.com/callback"
-}
+审查正确性、安全、并发与事务、性能、资源释放、可观测性、迁移兼容、可维护性和测试有效性。缺陷必须给出位置、证据、影响、必改内容和复核方法。
+
+### 8.4 QA 验收
+
+`tech-qa` 消费已通过代码双门审的实现，执行集成、端到端、性能、兼容和业务验收。QA 不做代码风格放行，也不直接修复开发代码。
+
+审核输出：
+
+```yaml
+review:
+  reviewer:
+  gate:
+  status: passed | revision | failed
+  criterion_results: []
+  defects:
+    - id:
+      severity: critical | major | minor
+      evidence:
+      impact:
+      required_change:
+      recheck:
+  residual_risks: []
 ```
 
-#### A.2 任务查询接口
+任一必选标准失败或存在 critical 缺陷时不得通过。
 
-```http
-GET /api/v1/tasks/{task_id}
-Authorization: Bearer {token}
-```
+## 9. 定向返工与失败
 
-#### A.3 批量任务接口
+- `revision` 只退回责任执行者，并保留缺陷 ID 与 attempt。
+- 修复后只重跑受影响的验证和审核，不重跑无关上游任务。
+- `block_dependents` 保持下游阻塞；`fail_workflow` 表示关键交付失败。
+- `continue` 只用于明确标记 optional 的非关键任务。
+- 默认最多返工 2 次；达到上限必须公开缺口并请求决策，不能无限循环或降低标准。
 
-```http
-POST /api/v1/batch-tasks
-Content-Type: application/json
-Authorization: Bearer {token}
+## 10. 冲突处理
 
-{
-  "workflow": "bp_generation",
-  "tasks": [...]
-}
-```
+Aggregator 不直接裁决领域冲突。Orchestrator 创建 reconciliation 任务，产物至少包含：冲突、各方证据、影响、可逆性、采用决策、依据、责任人和未决项。
 
-### 附录B：错误代码表
+典型冲突包括产品范围与工期、API 契约与实现、增长 CAC 与财务模型、团队成本与现金流、风险控制与营销或产品方案。
 
-| 错误代码 | 说明 | HTTP状态码 |
-|----------|------|------------|
-| SUCCESS | 成功 | 200 |
-| INPUT_VALIDATION_FAILED | 输入验证失败 | 400 |
-| UNAUTHORIZED | 未授权 | 401 |
-| FORBIDDEN | 禁止访问 | 403 |
-| NOT_FOUND | 资源不存在 | 404 |
-| RATE_LIMITED | 请求限流 | 429 |
-| INTERNAL_ERROR | 内部错误 | 500 |
-| SERVICE_UNAVAILABLE | 服务不可用 | 503 |
+## 11. 上下文、安全与授权
 
-### 附录C：版本历史
+- 只向角色传递完成任务所需内容，避免广播隐私与无关历史。
+- API key 只从宿主安全环境读取，不写入 Brief、产物或日志。
+- 法律、监管、医疗等高风险结论必须标记需专业人员复核。
+- merge、push、PR、部署、删除或丢弃工作必须处于用户授权范围内。
+- 无原生委派能力时明确标记单 Agent 角色模拟，不虚报独立上下文或并行。
 
-| 版本 | 日期 | 修改内容 | 作者 |
-|------|------|----------|------|
-| v1.0 | 2025-01-01 | 初始版本 | - |
+## 12. 可观测性与配置门禁
 
-### 附录D：相关文档
+每次运行应记录 `run_id`、`workflow_id`、任务状态、attempt、角色文件、加载技能、开始与完成时间、验证证据、审核与返工原因、最终产物引用和失败原因。
 
-- [bp-template.md](../templates/bp-template.md) - 商业计划书模板
-- [financial-model-template.md](../templates/financial-model-template.md) - 财务模型模板
-- [market-report-template.md](../templates/market-report-template.md) - 市场调研模板
-- [roadmap-template.md](../templates/roadmap-template.md) - 执行路线图模板
+角色、路由、技能或工作流变更后必须检查：
 
----
-
-> **声明**：本规范为动态文档，将根据实际运行情况和业务需求持续更新。所有智能体接入前需通过合规审查。
+- 注册 ID、角色文件和 frontmatter 一致；
+- 路由只引用 active 且存在的角色；
+- DAG 无环，最终产物可达，产物生产者唯一；
+- 执行者、代码审查员与 QA 边界独立；
+- 本地技能索引、目录、来源清单、许可证和链接一致；
+- 没有平台专用角色副本或运行时外部技能依赖。

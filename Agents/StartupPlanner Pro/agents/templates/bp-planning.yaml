@@ -1,125 +1,195 @@
-# 商业计划书工作流(原 StartupPlanner 核心流程)
-# 适用:从想法到完整商业计划书的创业规划全流程
-
+schema_version: "2.0"
 workflow:
   id: bp-planning
-  name: 创业规划工作流
-  version: "1.0"
-  description: 经典的"方向探索 → 方案设计 → 整合输出"三阶段流程
+  name: 创业验证与商业计划协作流
+  version: "2.1"
+  goal: 从创业想法形成有证据、跨部门一致且通过独立质检的商业计划书
+  system_inputs: [direction-brief, project-brief]
+  final_artifacts: [final-business-plan]
+  preflight:
+    - id: direction-gate
+      type: interactive-control-gate
+      skill: core/orchestrator/skills/brainstorming/SKILL.md
+      required_fields: [problem_or_direction, target_customer, offering, target_market]
+      cross_border_required_fields: [supply_origin, target_market, primary_channel_or_model]
+      accepted_status: [confirmed, delegated]
+      entry_condition: direction-brief.dag_entry_authorized == true
+      on_material_missing: await_user
+      retry_counted: false
+      prohibited_before_pass: [market-evidence, competitor-evidence, demand-evidence, strategic-analysis, validation-gate, product-brief, mvp-scope, tech-feasibility, growth-plan, financial-model, organization-plan, risk-red-team, fundraising-plan, bp-draft]
+      acceptance_criteria:
+        - 每个重大方向字段可追溯到用户确认或明确代选授权
+        - 未确认建议没有被升级为用户输入
+        - 用户未明确免复核时已确认最终方向
+        - Project Brief 与 direction-brief 一致
+  gates:
+    - id: validation-gate
+      artifact: validation-decision
+      allowed: [GO, PIVOT]
+      on_reject: stop
 
-  stages:
+  tasks:
+    - id: market-evidence
+      objective: 测算市场空间、细分市场和趋势并提供可追溯来源
+      agent: research-market
+      depends_on: []
+      requires: [direction-brief, project-brief]
+      produces: {id: market-evidence, type: market-report}
+      acceptance_criteria: [核心数字标注来源与日期, TAM和SAM和SOM假设可复算, 明确高不确定性数据]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
 
-    # ====== 阶段 1:方向探索 ======
-    - stage: 方向探索
-      parallel: true
-      tasks:
-        - id: opc-validate
-          agent: strategy-opc
-          inputs:
-            - 创业想法
-          outputs:
-            - 假设清单
-            - 验证证据
-            - GO/PIVOT/NO-GO 决策
-          estimated_effort: large
+    - id: competitor-evidence
+      objective: 形成主要替代方案和竞品的证据化差异矩阵
+      agent: research-competitor
+      depends_on: []
+      requires: [direction-brief, project-brief]
+      produces: {id: competitor-evidence, type: competitor-report}
+      acceptance_criteria: [覆盖直接竞品与替代方案, 对比维度与用户问题相关, 事实有来源]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
 
-        - id: industry-analysis
-          agent: strategy-analyst
-          inputs:
-            - 创业想法
-          outputs:
-            - 行业分析
-            - 商业模式画布
-          estimated_effort: medium
+    - id: demand-evidence
+      objective: 定义目标用户、核心任务、痛点证据和待验证假设
+      agent: strategy-market-researcher
+      depends_on: []
+      requires: [direction-brief, project-brief]
+      produces: {id: demand-evidence, type: demand-evidence}
+      acceptance_criteria: [事实与假设分离, 给出用户证据或明确证据缺口, 定义可证伪的需求假设]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
 
-        - id: market-research
-          agent: research-market
-          inputs:
-            - 目标用户假设
-          outputs:
-            - 用户画像
-            - TAM/SAM/SOM
-          estimated_effort: medium
+    - id: strategic-analysis
+      objective: 基于市场、竞品和需求证据形成商业模式与差异化选择
+      agent: strategy-analyst
+      depends_on: [market-evidence, competitor-evidence, demand-evidence]
+      requires: [project-brief, market-evidence, competitor-evidence, demand-evidence]
+      produces: {id: business-model, type: business-model}
+      acceptance_criteria: [价值主张对应已识别用户问题, 收入与成本逻辑明确, 差异化由竞品证据支持]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
 
-    # ====== 阶段 2:方案设计 ======
-    - stage: 方案设计
-      parallel: true
-      depends_on: [opc-validate, industry-analysis, market-research]
-      tasks:
-        - id: product-design
-          agent: product-pm
-          inputs:
-            - 用户画像
-            - 商业模式
-          outputs:
-            - PRD
-            - 路线图
-          estimated_effort: large
+    - id: validation-gate
+      objective: 对关键商业假设给出 GO、PIVOT 或 NO-GO 决策
+      agent: strategy-opc
+      depends_on: [market-evidence, competitor-evidence, demand-evidence, strategic-analysis]
+      requires: [market-evidence, competitor-evidence, demand-evidence, business-model]
+      produces: {id: validation-decision, type: validation-decision}
+      acceptance_criteria: [逐项列出关键假设与证据, 决策可由证据追溯, 对证据不足项定义验证实验]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: stop_workflow
 
-        - id: marketing-plan
-          agent: marketing-growth-hacker
-          inputs:
-            - 用户画像
-            - PRD
-          outputs:
-            - 营销策略
-            - 获客计划
-          estimated_effort: medium
+    - id: product-brief
+      objective: 在通过验证的边界内冻结目标用户、价值主张、产品范围和成功指标
+      agent: product-pm
+      depends_on: [validation-gate]
+      requires: [project-brief, validation-decision, business-model, demand-evidence]
+      produces: {id: product-brief, type: product-brief}
+      acceptance_criteria: [范围与验证决策一致, 用户故事包含验收标准, 成功指标可测量]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
 
-        - id: org-design
-          agent: org-architect
-          inputs:
-            - 路线图
-          outputs:
-            - 组织架构
-            - 股权方案
-          estimated_effort: medium
+    - id: mvp-scope
+      objective: 将产品简报裁剪为可验证核心假设的最小 MVP
+      agent: product-mvp-designer
+      depends_on: [product-brief]
+      requires: [product-brief, validation-decision]
+      produces: {id: mvp-scope, type: mvp-scope}
+      acceptance_criteria: [每项功能对应验证假设, 明确不做清单, 定义实验指标与停止条件]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
 
-        - id: financial-model
-          agent: finance-financial-analyst
-          inputs:
-            - 营销策略
-            - 组织架构
-          outputs:
-            - 3 年财务预测
-            - 盈亏平衡分析
-          estimated_effort: large
+    - id: tech-feasibility
+      objective: 评估 MVP 的技术可行性、成本、周期和关键风险
+      agent: tech-architect
+      depends_on: [mvp-scope]
+      requires: [product-brief, mvp-scope]
+      produces: {id: tech-feasibility, type: feasibility-report}
+      acceptance_criteria: [覆盖关键技术路径, 给出成本与周期假设, 明确高风险验证点]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
 
-    # ====== 阶段 3:整合输出 ======
-    - stage: 整合输出
-      parallel: true
-      depends_on: [product-design, marketing-plan, org-design, financial-model]
-      tasks:
-        - id: risk-analysis
-          agent: risk-manager
-          inputs:
-            - 全部方案
-          outputs:
-            - 风险矩阵
-            - 应对预案
-          estimated_effort: medium
+    - id: growth-plan
+      objective: 设计与目标用户和产品范围一致的获客与验证漏斗
+      agent: marketing-growth-hacker
+      depends_on: [product-brief]
+      requires: [product-brief, market-evidence, demand-evidence]
+      produces: {id: growth-plan, type: growth-plan}
+      acceptance_criteria: [渠道选择有用户证据, 漏斗指标定义完整, CAC假设可测试]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
 
-        - id: fundraising-plan
-          agent: finance-fundraising
-          inputs:
-            - 财务模型
-            - 团队
-          outputs:
-            - 融资方案
-            - 估值建议
-          estimated_effort: medium
+    - id: financial-model
+      objective: 基于产品、技术与增长假设建立可复算的单位经济和现金流模型
+      agent: finance-financial-analyst
+      depends_on: [tech-feasibility, growth-plan]
+      requires: [product-brief, tech-feasibility, growth-plan, market-evidence]
+      produces: {id: financial-model, type: financial-model}
+      acceptance_criteria: [所有输入假设集中列示, LTV和CAC与增长计划一致, 现金流和盈亏平衡可复算]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
 
-        - id: bp-final
-          agent: director-bp
-          inputs:
-            - 所有阶段输出
-          outputs:
-            - 完整 BP
-            - 执行路线图
-          estimated_effort: large
+    - id: organization-plan
+      objective: 设计与 MVP 路线和资金约束匹配的最小团队与治理结构
+      agent: org-architect
+      depends_on: [tech-feasibility]
+      requires: [product-brief, mvp-scope, tech-feasibility]
+      produces: {id: organization-plan, type: organization-plan}
+      acceptance_criteria: [岗位对应关键能力缺口, 人力节奏与产品路线一致, 治理建议标注法律核验项]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
 
-  quality_gates:
-    - "GO 决策通过"
-    - "财务模型盈亏平衡可达"
-    - "BP 覆盖全部 11 个章节"
-    - "各章节数据一致"
+    - id: cross-functional-reconciliation
+      objective: 对齐产品范围、技术周期、增长 CAC、财务预算和团队计划中的冲突
+      agent: product-director
+      depends_on: [financial-model, organization-plan]
+      requires: [product-brief, mvp-scope, tech-feasibility, growth-plan, financial-model, organization-plan]
+      produces: {id: consistency-ledger, type: consistency-ledger}
+      acceptance_criteria: [逐项记录冲突及负责人, 关键数字跨产物一致, 未解决项有决策期限]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
+
+    - id: risk-red-team
+      objective: 对已对齐方案进行独立风险、合规与最坏情况审查
+      agent: risk-manager
+      depends_on: [cross-functional-reconciliation]
+      requires: [consistency-ledger, product-brief, tech-feasibility, growth-plan, financial-model, organization-plan]
+      produces: {id: risk-review, type: risk-review}
+      acceptance_criteria: [风险按概率与影响排序, 每个关键风险有触发指标与责任人, 法律结论标注需专业复核]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
+
+    - id: fundraising-plan
+      objective: 基于模型、里程碑和风险制定融资需求与资金用途
+      agent: finance-fundraising
+      depends_on: [risk-red-team]
+      requires: [financial-model, organization-plan, consistency-ledger, risk-review]
+      produces: {id: fundraising-plan, type: fundraising-plan}
+      acceptance_criteria: [融资额与现金流缺口一致, 资金用途对应里程碑, 估值假设与风险充分披露]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
+
+    - id: bp-draft
+      objective: 将全部已通过产物整合为面向投资人的一致商业计划书
+      agent: director-bp
+      depends_on: [fundraising-plan]
+      requires: [direction-brief, project-brief, market-evidence, competitor-evidence, demand-evidence, business-model, validation-decision, product-brief, mvp-scope, tech-feasibility, growth-plan, financial-model, organization-plan, consistency-ledger, risk-review, fundraising-plan]
+      produces: {id: final-business-plan, type: business-plan}
+      acceptance_criteria: [创业方向可追溯到用户确认或明确代选授权, 关键结论均可追溯到产物, 核心数字跨章节一致, 假设与事实明确区分, 包含执行路线图与风险披露]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: fail_workflow

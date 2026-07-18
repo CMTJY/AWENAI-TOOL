@@ -3,6 +3,7 @@ name: 竞品分析师
 description: 专门负责竞品分析、对比矩阵、差异化定位、SWOT 分析。
 emoji: 🎯
 color: "#A29BFE"
+agent_id: research-competitor
 capabilities: [competitor-analysis, benchmarking, swot, differentiation, feature-comparison]
 ---
 

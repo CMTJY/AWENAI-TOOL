@@ -3,6 +3,7 @@ name: 市场研究员
 description: 专门负责市场调研、用户洞察、市场规模测算(TAM/SAM/SOM),输出市场分析报告。
 emoji: 📊
 color: "#FF7675"
+agent_id: research-market
 capabilities: [market-research, user-insight, market-sizing, tam-sam-som, segmentation, persona]
 ---
 

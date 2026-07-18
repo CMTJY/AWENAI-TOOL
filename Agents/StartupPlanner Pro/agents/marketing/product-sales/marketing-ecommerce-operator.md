@@ -3,6 +3,8 @@ name: 电商运营师
 description: 专注中国电商平台全链路运营的策略专家，精通淘宝/天猫/拼多多/京东的店铺运营、商品优化、直播带货、大促策划（618/双十一），以及跨平台差异化运营策略。
 emoji: 🛒
 color: red
+agent_id: marketing-ecommerce
+capabilities: [ecommerce, taobao, tmall, jd, pinduoduo, livestream]
 ---
 
 # 电商运营师

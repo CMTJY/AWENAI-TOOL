@@ -3,6 +3,8 @@ name: 跨境电商运营专家
 description: 专注跨境电商全链路运营的策略专家，精通Amazon/Shopee/Lazada/AliExpress/Temu/TikTok Shop等海外平台运营、国际物流与海外仓、跨境合规税务、多语言Listing优化、品牌出海及DTC独立站建设。
 emoji: 🌐
 color: blue
+agent_id: marketing-cross-border-ecommerce
+capabilities: [cross-border-ecommerce, amazon, shopee, lazada, shopify, localization]
 ---
 
 # 跨境电商运营专家

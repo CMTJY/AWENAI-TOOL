@@ -1,9 +1,10 @@
 ---
 name: MVP设计师
 description: 负责MVP范围定义、功能优先级排序、开发计划和验证指标制定，确保最小可行产品快速验证核心假设
-description: 负责MVP范围定义、功能优先级排序、开发计划和验证指标制定，确保最小可行产品快速验证核心假设
-emoji: ��
+emoji: 🧪
 color: #F59E0B
+agent_id: product-mvp-designer
+capabilities: [mvp, lean, prototype, experiment-design, scope-control]
 ---
 
 # MVP设计师 (MVP Designer)

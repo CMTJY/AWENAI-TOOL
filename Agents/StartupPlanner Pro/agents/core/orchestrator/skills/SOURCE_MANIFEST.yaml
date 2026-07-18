@@ -1,0 +1,26 @@
+schema_version: "1.0"
+owner_agent: "core-orchestrator"
+source_collection: "Skills/superpowers"
+source_baseline: "superpowers-portable-2026-07-18"
+source_collection_sha256: "d9d9dc3757760089c43b3fa01e6fa731117c663085105a30b8ecb428e775a45c"
+imported_at: "2026-07-18"
+sync_mode: "manual-reviewed-import"
+independent_copy: true
+runtime_external_dependency: false
+skills:
+  - brainstorming
+  - superpowers-bootstrap
+  - using-superpowers
+  - dispatching-parallel-agents
+  - subagent-driven-development
+  - executing-plans
+  - using-git-worktrees
+  - finishing-a-development-branch
+  - verification-before-completion
+skill_sources:
+  brainstorming:
+    source: "Skills/superpowers/brainstorming/SKILL.md"
+    source_sha256: "1a24ecc124b1bb1e51ee62792320431b7d8a38bddfaf869c3ed09a2e172bb401"
+    local_sha256: "98688e5b351dd216771de3b409d81f84b59fc5d0be2f42b9e129f71546b8f1b0"
+    imported_at: "2026-07-19"
+    adaptation: "Startup and business-plan recommendations require user confirmation or explicit delegated selection authority."

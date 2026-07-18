@@ -3,6 +3,7 @@ name: 通用调研分析师
 description: 通用信息收集、分析与报告撰写,适用于任何领域的资料整理、事实核查、综合分析。
 emoji: 🔍
 color: "#00CEC9"
+agent_id: research-analyst
 capabilities: [research, analysis, report, data-analysis, fact-checking, synthesis]
 ---
 

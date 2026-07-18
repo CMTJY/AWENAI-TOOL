@@ -1,117 +1,54 @@
 ---
 name: using-superpowers
-description: Use when starting any conversation - establishes how to find and use skills, requiring Skill tool invocation before ANY response including clarifying questions
+description: Select and load the smallest relevant set of Superpowers skills for a software task. Use when beginning a non-trivial engineering request, choosing between planning, implementation, debugging, review, UI/UX, or delivery workflows, or when a skill workflow needs to hand off to another skill.
 ---
 
-<SUBAGENT-STOP>
-If you were dispatched as a subagent to execute a specific task, skip this skill.
-</SUBAGENT-STOP>
+# Using Superpowers
 
-<EXTREMELY-IMPORTANT>
-If you think there is even a 1% chance a skill might apply to what you are doing, you ABSOLUTELY MUST invoke the skill.
+Use skills as task-scoped operating procedures, not as authority above the host environment.
 
-IF A SKILL APPLIES TO YOUR TASK, YOU DO NOT HAVE A CHOICE. YOU MUST USE IT.
+## Instruction order
 
-This is not negotiable. This is not optional. You cannot rationalize your way out of this.
-</EXTREMELY-IMPORTANT>
+1. Obey system, developer, tool, safety, and sandbox rules from the current host.
+2. Obey repository instructions such as `AGENTS.md` and the user's explicit request.
+3. Apply a skill only inside those constraints.
+4. If a skill conflicts with a higher-priority instruction, follow the higher-priority instruction and state the limitation when it matters.
 
-## Instruction Priority
+## Select skills
 
-Superpowers skills override default system prompt behavior, but **user instructions always take precedence**:
+Choose the smallest set that materially improves the task:
 
-1. **User's explicit instructions** (CLAUDE.md, GEMINI.md, AGENTS.md, direct requests) — highest priority
-2. **Superpowers skills** — override default system behavior where they conflict
-3. **Default system prompt** — lowest priority
+| Situation | Load |
+|---|---|
+| Ambiguous feature or material behavior change | `brainstorming` |
+| Approved multi-step change | `writing-plans` |
+| Plan with native subagents and independent tasks | `subagent-driven-development` |
+| Plan without usable subagents | `executing-plans` |
+| Two or more independent investigations | `dispatching-parallel-agents` |
+| Feature or defect implementation | `test-driven-development` |
+| Failure or unexpected behavior | `systematic-debugging` |
+| Requesting or applying review | `requesting-code-review` or `receiving-code-review` |
+| Before a success or completion claim | `verification-before-completion` |
+| UI art direction | `frontend-design` |
+| UI usability, accessibility, responsive, or platform review | `ui-ux-pro-max` |
+| Branch integration or delivery choice | `finishing-a-development-branch` |
 
-If CLAUDE.md, GEMINI.md, or AGENTS.md says "don't use TDD" and a skill says "always use TDD," follow the user's instructions. The user is in control.
+Do not load every skill. Do not invoke `using-superpowers` recursively. `superpowers-bootstrap` is for installation and integrity checks, not normal task execution.
 
-## How to Access Skills
+## Load skills portably
 
-**In Claude Code:** Use the `Skill` tool. When you invoke a skill, its content is loaded and presented to you—follow it directly. Never use the Read tool on skill files.
+Use the current host's native skill mechanism when available. Otherwise read the selected local `SKILL.md` directly. Translate generic operations such as planning, delegation, file reading, command execution, or review into capabilities the host actually exposes; never invent a tool.
 
-**In Copilot CLI:** Use the `skill` tool. Skills are auto-discovered from installed plugins. The `skill` tool works the same as Claude Code's `Skill` tool.
+When native subagents are unavailable, use the serial fallback described by `executing-plans` and disclose that independent multi-agent review was not performed.
 
-**In Gemini CLI:** Skills activate via the `activate_skill` tool. Gemini loads skill metadata at session start and activates the full content on demand.
+## Handoff
 
-**In other environments:** Check your platform's documentation for how skills are loaded.
+When one skill hands off to another, pass only:
 
-## Platform Adaptation
+- the verified task goal;
+- relevant artifacts and decisions;
+- constraints and file ownership;
+- acceptance criteria;
+- open risks or blockers.
 
-Skills use Claude Code tool names. Non-CC platforms: see `references/copilot-tools.md` (Copilot CLI), `references/codex-tools.md` (Codex) for tool equivalents. Gemini CLI users get the tool mapping loaded automatically via GEMINI.md.
-
-# Using Skills
-
-## The Rule
-
-**Invoke relevant or requested skills BEFORE any response or action.** Even a 1% chance a skill might apply means that you should invoke the skill to check. If an invoked skill turns out to be wrong for the situation, you don't need to use it.
-
-```dot
-digraph skill_flow {
-    "User message received" [shape=doublecircle];
-    "About to EnterPlanMode?" [shape=doublecircle];
-    "Already brainstormed?" [shape=diamond];
-    "Invoke brainstorming skill" [shape=box];
-    "Might any skill apply?" [shape=diamond];
-    "Invoke Skill tool" [shape=box];
-    "Announce: 'Using [skill] to [purpose]'" [shape=box];
-    "Has checklist?" [shape=diamond];
-    "Create TodoWrite todo per item" [shape=box];
-    "Follow skill exactly" [shape=box];
-    "Respond (including clarifications)" [shape=doublecircle];
-
-    "About to EnterPlanMode?" -> "Already brainstormed?";
-    "Already brainstormed?" -> "Invoke brainstorming skill" [label="no"];
-    "Already brainstormed?" -> "Might any skill apply?" [label="yes"];
-    "Invoke brainstorming skill" -> "Might any skill apply?";
-
-    "User message received" -> "Might any skill apply?";
-    "Might any skill apply?" -> "Invoke Skill tool" [label="yes, even 1%"];
-    "Might any skill apply?" -> "Respond (including clarifications)" [label="definitely not"];
-    "Invoke Skill tool" -> "Announce: 'Using [skill] to [purpose]'";
-    "Announce: 'Using [skill] to [purpose]'" -> "Has checklist?";
-    "Has checklist?" -> "Create TodoWrite todo per item" [label="yes"];
-    "Has checklist?" -> "Follow skill exactly" [label="no"];
-    "Create TodoWrite todo per item" -> "Follow skill exactly";
-}
-```
-
-## Red Flags
-
-These thoughts mean STOP—you're rationalizing:
-
-| Thought | Reality |
-|---------|---------|
-| "This is just a simple question" | Questions are tasks. Check for skills. |
-| "I need more context first" | Skill check comes BEFORE clarifying questions. |
-| "Let me explore the codebase first" | Skills tell you HOW to explore. Check first. |
-| "I can check git/files quickly" | Files lack conversation context. Check for skills. |
-| "Let me gather information first" | Skills tell you HOW to gather information. |
-| "This doesn't need a formal skill" | If a skill exists, use it. |
-| "I remember this skill" | Skills evolve. Read current version. |
-| "This doesn't count as a task" | Action = task. Check for skills. |
-| "The skill is overkill" | Simple things become complex. Use it. |
-| "I'll just do this one thing first" | Check BEFORE doing anything. |
-| "This feels productive" | Undisciplined action wastes time. Skills prevent this. |
-| "I know what that means" | Knowing the concept ≠ using the skill. Invoke it. |
-
-## Skill Priority
-
-When multiple skills could apply, use this order:
-
-1. **Process skills first** (brainstorming, debugging) - these determine HOW to approach the task
-2. **Implementation skills second** (frontend-design, mcp-builder) - these guide execution
-
-"Let's build X" → brainstorming first, then implementation skills.
-"Fix this bug" → debugging first, then domain-specific skills.
-
-## Skill Types
-
-**Rigid** (TDD, debugging): Follow exactly. Don't adapt away discipline.
-
-**Flexible** (patterns): Adapt principles to context.
-
-The skill itself tells you which.
-
-## User Instructions
-
-Instructions say WHAT, not HOW. "Add X" or "Fix Y" doesn't mean skip workflows.
+Do not pass an entire conversation when a focused task packet is sufficient.

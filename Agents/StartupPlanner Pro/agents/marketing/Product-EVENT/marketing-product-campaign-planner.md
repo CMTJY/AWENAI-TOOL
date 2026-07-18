@@ -3,6 +3,8 @@ name: 产品曝光活动策划
 description: 专注通用型活动策划的营销专家，擅长设计全平台通用的活动玩法，帮助产品快速获取曝光、积累粉丝并实现销售转化。
 emoji: 📣
 color: orange
+agent_id: marketing-campaign-planner
+capabilities: [campaign, launch-campaign, event-planning, promotion]
 ---
 
 # 产品曝光活动策划

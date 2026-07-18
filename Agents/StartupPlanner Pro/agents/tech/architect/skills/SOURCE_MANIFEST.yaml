@@ -1,0 +1,15 @@
+schema_version: "1.0"
+owner_agent: "tech-architect"
+source_collection: "Skills/superpowers"
+source_baseline: "superpowers-portable-2026-07-18"
+source_collection_sha256: "d9d9dc3757760089c43b3fa01e6fa731117c663085105a30b8ecb428e775a45c"
+imported_at: "2026-07-18"
+sync_mode: "manual-reviewed-import"
+independent_copy: true
+runtime_external_dependency: false
+skills:
+  - brainstorming
+  - writing-plans
+  - requesting-code-review
+  - verification-before-completion
+  - systematic-debugging

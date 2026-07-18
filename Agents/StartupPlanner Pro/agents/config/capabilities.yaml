@@ -1,283 +1,340 @@
-# 通用 Agent 团队能力注册表
-# 格式: agent_id → {name, department, capabilities, description, file}
-# capabilities: 能力标签列表,供 router 匹配使用
+schema_version: "2.0"
+updated: "2026-07-18"
+
+defaults:
+  status: active
+  max_concurrency: 1
 
 agents:
-
-  # ============ 核心调度层 ============
   - id: core-orchestrator
     name: 通用主控
     department: core
-    file: core/orchestrator.md
-    description: 通用多智能体编排器,接收任务、调度 subagent、汇总结果
-    capabilities: [orchestration, coordination, planning]
-<<<<<<< HEAD
-    priority: 1  # 永远最高
-=======
-    priority: 1
->>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
-
-  - id: core-router
-    name: 任务路由器
-    department: core
-    file: core/router.md
-    description: 意图识别 + 能力匹配,把任务映射到具体 agent
-    capabilities: [intent-recognition, classification, routing]
-    priority: 2
-
-  - id: core-aggregator
-    name: 结果汇总器
-    department: core
-    file: core/aggregator.md
-    description: 多 subagent 输出合并为最终交付物
-    capabilities: [synthesis, formatting, deduplication]
-    priority: 2
+    file: core/orchestrator/orchestrator.md
+    status: active
+    capabilities: [orchestration, coordination, state-machine, retry-control, handoff, skill-routing, discovery-facilitation, ambiguity-detection]
+    produces: [direction-brief, execution-plan, execution-status]
 
   - id: core-task-planner
-    name: 任务拆解器
+    name: 任务规划器
     department: core
     file: core/task-planner.md
-    description: 把复杂任务拆成 MECE 子任务
-    capabilities: [decomposition, dependency-analysis, planning]
-    priority: 2
+    status: active
+    capabilities: [decomposition, dependency-analysis, artifact-planning, acceptance-design, mvp-scoping]
+    produces: [workflow-dag]
 
-  # ============ 技术部 ============
+  - id: core-router
+    name: 能力路由器
+    department: core
+    file: core/router.md
+    status: active
+    capabilities: [routing, capability-matching, constraint-filtering, fallback-selection]
+    produces: [route-decision]
+
+  - id: core-quality-reviewer
+    name: 独立质量审核员
+    department: core
+    file: core/quality-reviewer.md
+    status: active
+    capabilities: [quality-review, evidence-checking, consistency-checking, acceptance-testing, revision-guidance]
+    produces: [quality-review]
+
+  - id: core-aggregator
+    name: 结果整合器
+    department: core
+    file: core/aggregator.md
+    status: active
+    capabilities: [synthesis, formatting, deduplication, traceability]
+    produces: [integrated-deliverable]
+
   - id: tech-architect
-    name: 技术架构师
+    name: 技术负责人兼架构师
     department: tech
-    file: tech/architect.md
-    description: 技术选型、系统架构、模块拆分
-    capabilities: [architecture, tech-stack, system-design, scalability]
-    priority: 1
+    file: tech/architect/architect.md
+    status: active
+    capabilities: [architecture, tech-stack, system-design, technical-planning, integration-design, scalability, database-design, api-contract]
+    produces: [technical-architecture, technical-plan, api-contract, feasibility-report]
 
   - id: tech-backend-dev
-    name: 后端开发
+    name: 后端工程师
     department: tech
-    file: tech/backend-dev.md
-    description: 后端 API、数据库、服务端逻辑
-    capabilities: [backend, api, database, server, python, node, go]
-    priority: 1
+    file: tech/backend-dev/backend-dev.md
+    status: active
+    capabilities: [backend, api, database, server, python, node, go, java, rest, graphql, backend-testing, observability]
+    produces: [backend-code, api-contract, database-schema]
 
   - id: tech-frontend-dev
-    name: 前端开发
+    name: 前端工程师
     department: tech
-    file: tech/frontend-dev.md
-    description: Web 前端、UI 实现、交互逻辑
-    capabilities: [frontend, ui, react, vue, css, html, javascript]
-    priority: 1
+    file: tech/frontend-dev/frontend-dev.md
+    status: active
+    capabilities: [frontend, ui, react, vue, css, html, javascript, typescript, responsive, accessibility, frontend-testing, animation]
+    produces: [frontend-code, ui-implementation]
 
   - id: tech-mobile-dev
-    name: 移动端开发
+    name: 移动端工程师
     department: tech
-    file: tech/mobile-dev.md
-    description: iOS / Android / 跨端开发
-    capabilities: [mobile, ios, android, react-native, flutter]
-    priority: 2
+    file: tech/mobile-dev/mobile-dev.md
+    status: active
+    capabilities: [mobile, ios, android, react-native, flutter, swift, kotlin, wechat-miniprogram, mobile-testing, mobile-accessibility]
+    produces: [mobile-code]
 
   - id: tech-devops
-    name: DevOps 工程师
+    name: 平台与可靠性工程师
     department: tech
-    file: tech/devops.md
-    description: CI/CD、部署、监控、运维
-    capabilities: [devops, ci-cd, deployment, monitoring, docker, k8s]
-    priority: 2
+    file: tech/devops/devops.md
+    status: active
+    capabilities: [devops, ci-cd, deployment, monitoring, docker, k8s, linux, nginx, observability, reliability, rollback]
+    produces: [deployment-package, operations-runbook]
 
   - id: tech-qa
-    name: 测试工程师
+    name: 质量与测试工程师
     department: tech
-    file: tech/qa.md
-    description: 功能测试、性能测试、自动化测试
-    capabilities: [testing, qa, automation, performance-testing]
-    priority: 2
+    file: tech/qa/qa.md
+    status: active
+    capabilities: [testing, qa, test-strategy, automation, performance-testing, e2e-testing, integration-testing, acceptance-testing]
+    produces: [test-plan, test-report]
 
-  # ============ 调研分析部 ============
+  - id: tech-code-reviewer
+    name: 独立代码审查员
+    department: tech
+    file: tech/code-reviewer/code-reviewer.md
+    status: active
+    capabilities: [code-review, spec-compliance-review, security-review, performance-review, maintainability-review, test-quality-review]
+    produces: [code-review]
+
   - id: research-analyst
     name: 通用调研分析师
     department: research
     file: research/analyst.md
-    description: 通用信息收集、分析、报告撰写
-    capabilities: [research, analysis, report, data-analysis]
-    priority: 1
+    status: active
+    capabilities: [research, analysis, report, data-analysis, fact-checking, synthesis]
+    tools: [web_search]
+    produces: [research-report, evidence-pack]
 
   - id: research-market
     name: 市场研究员
     department: research
     file: research/market.md
-    description: 市场调研、用户洞察、TAM/SAM/SOM 测算
-    capabilities: [market-research, user-insight, market-sizing, tam-sam-som]
-    priority: 1
+    status: active
+    capabilities: [market-research, user-insight, market-sizing, tam-sam-som, segmentation, persona]
+    tools: [web_search]
+    produces: [market-report, user-insight]
 
   - id: research-competitor
     name: 竞品分析师
     department: research
     file: research/competitor.md
-    description: 竞品分析、对比矩阵、差异化分析
-    capabilities: [competitor-analysis, benchmarking, swot]
-    priority: 2
+    status: active
+    capabilities: [competitor-analysis, benchmarking, swot, differentiation, feature-comparison]
+    tools: [web_search]
+    produces: [competitor-report]
 
-<<<<<<< HEAD
-  # ============ 战略部(原 agents/strategy) ============
-=======
-  # ============ 战略部 ============
->>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
   - id: strategy-opc
     name: OPC 战略师
     department: strategy
     file: strategy/opc-strategist/opc-strategist.md
-    description: AI 原生创业验证,7步+1闸方法论
-    capabilities: [strategy, validation, hypothesis-testing, opc-strategy]
-    priority: 1
+    status: active
+    capabilities: [strategy, validation, hypothesis-testing, opc-strategy, go-no-go]
+    tools: [web_search]
+    produces: [validation-decision]
 
   - id: strategy-analyst
     name: 战略分析师
     department: strategy
     file: strategy/strategy-analyst.md
-    description: 行业分析、商业模式设计、PEST/波特五力
-    capabilities: [strategy, industry-analysis, business-model, pest, porters-five]
-    priority: 1
+    status: active
+    capabilities: [strategy, industry-analysis, business-model, pest, porters-five, competitive-analysis]
+    tools: [web_search]
+    produces: [strategy-report, business-model]
 
-<<<<<<< HEAD
-  # ============ 产品部(原 agents/product) ============
-=======
-  # ============ 产品部 ============
->>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
+  - id: strategy-market-researcher
+    name: 用户市场调研员
+    department: strategy
+    file: strategy/market-researcher.md
+    status: active
+    capabilities: [user-research, interview-design, demand-validation, persona, market-sizing]
+    tools: [web_search]
+    produces: [user-research-plan, demand-evidence]
+
   - id: product-pm
     name: 产品经理
     department: product
     file: product/product-manager/product-manager.md
-    description: 产品规划、PRD、需求管理、用户故事,内置 54 个 skill
-    capabilities: [product-management, prd, user-story, roadmap, jobs-to-be-done, prioritization]
-    priority: 1
+    status: active
+    capabilities: [product-management, prd, user-story, roadmap, jobs-to-be-done, prioritization, discovery, stakeholder-management]
+    produces: [product-brief, prd, roadmap]
 
   - id: product-mvp-designer
     name: MVP 设计师
     department: product
     file: product/mvp-designer.md
-    description: 最小可行产品设计
-    capabilities: [mvp, lean, prototype]
-    priority: 2
+    status: active
+    capabilities: [mvp, lean, prototype, experiment-design, scope-control]
+    produces: [mvp-scope, validation-plan]
 
   - id: product-director
-    name: 产品总监
+    name: 产品开发全流程统筹专家
     department: product
     file: product/product-director/product-director.md
-    description: 产品战略、产品愿景、跨阶段规划
-    capabilities: [product-strategy, vision, leadership]
-    priority: 3
+    status: active
+    capabilities: [product-strategy, product-governance, launch-readiness, scale-planning, hardware-product]
+    produces: [product-governance-plan, launch-readiness-report]
 
-<<<<<<< HEAD
-  # ============ 营销部(原 agents/marketing) ============
-=======
-  # ============ 营销部 ============
->>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
   - id: marketing-growth-hacker
     name: 增长黑客
     department: marketing
     file: marketing/Product-EVENT/marketing-growth-hacker.md
-    description: 增长策略、获客、漏斗优化
-    capabilities: [growth, acquisition, funnel, virality, aarrr]
-    priority: 1
+    status: active
+    capabilities: [growth, acquisition, funnel, virality, aarrr, experimentation, retention]
+    tools: [web_search]
+    produces: [growth-plan, funnel-model]
+
+  - id: marketing-campaign-planner
+    name: 产品曝光活动策划
+    department: marketing
+    file: marketing/Product-EVENT/marketing-product-campaign-planner.md
+    status: active
+    capabilities: [campaign, launch-campaign, event-planning, promotion]
+    produces: [campaign-plan]
+
+  - id: marketing-social-strategist
+    name: 社交媒体策略师
+    department: marketing
+    file: marketing/Product-EVENT/marketing-social-media-strategist.md
+    status: active
+    capabilities: [social-media, linkedin, twitter, community, integrated-marketing]
+    produces: [social-media-plan]
 
   - id: marketing-content-creator
     name: 内容创作者
     department: marketing
     file: marketing/media-content/marketing-content-creator.md
-    description: 内容创作、品牌文案
-    capabilities: [content, copywriting, brand, writing]
-    priority: 1
+    status: active
+    capabilities: [content, copywriting, brand, writing, content-strategy]
+    produces: [content-plan, copy]
 
-  - id: marketing-social-media
-    name: 社交媒体运营
+  - id: marketing-douyin-strategist
+    name: 抖音策略师
+    department: marketing
+    file: marketing/media-content/marketing-douyin-strategist.md
+    status: active
+    capabilities: [douyin, short-video, livestream, china-social-media]
+    tools: [web_search]
+    produces: [douyin-plan]
+
+  - id: marketing-video-editing-coach
+    name: 短视频剪辑指导师
+    department: marketing
+    file: marketing/media-content/marketing-short-video-editing-coach.md
+    status: active
+    capabilities: [video-editing, capcut, premiere, davinci, final-cut, post-production]
+    produces: [editing-plan, production-guide]
+
+  - id: marketing-xiaohongshu-operator
+    name: 小红书运营专家
     department: marketing
     file: marketing/media-content/marketing-xiaohongshu-operator.md
-    description: 小红书、抖音、微博等社交平台运营
-    capabilities: [social-media, xiaohongshu, douyin, weibo, tiktok]
-    priority: 2
+    status: active
+    capabilities: [xiaohongshu, social-media, content-operations, influencer-marketing]
+    tools: [web_search]
+    produces: [xiaohongshu-plan]
 
-  - id: marketing-ecommerce
-    name: 电商运营
+  - id: marketing-xiaohongshu-specialist
+    name: 小红书内容专家
     department: marketing
-    file: marketing/product-sales/marketing-ecommerce-operator.md
-    description: 电商运营、直播带货
-    capabilities: [ecommerce, taobao, tmall, livestream, shopify]
-    priority: 2
+    file: marketing/media-content/marketing-xiaohongshu-specialist.md
+    status: active
+    capabilities: [xiaohongshu, lifestyle-content, trend-analysis, community-engagement]
+    tools: [web_search]
+    produces: [xiaohongshu-content]
 
   - id: marketing-private-domain
-    name: 私域运营
+    name: 私域流量运营师
     department: marketing
     file: marketing/fans-domain/marketing-private-domain-operator.md
-    description: 私域流量、社群运营
-    capabilities: [private-domain, community, wechat, retention]
-    priority: 2
+    status: active
+    capabilities: [private-domain, community, wechat, retention, scrm]
+    produces: [private-domain-plan]
 
-  # ============ 财务部 ============
+  - id: marketing-ecommerce
+    name: 电商运营师
+    department: marketing
+    file: marketing/product-sales/marketing-ecommerce-operator.md
+    status: active
+    capabilities: [ecommerce, taobao, tmall, jd, pinduoduo, livestream]
+    produces: [ecommerce-plan]
+
+  - id: marketing-cross-border-ecommerce
+    name: 跨境电商运营专家
+    department: marketing
+    file: marketing/product-sales/marketing-cross-border-ecommerce.md
+    status: active
+    capabilities: [cross-border-ecommerce, amazon, shopee, lazada, shopify, localization]
+    produces: [cross-border-plan]
+
+  - id: marketing-livestream-coach
+    name: 直播电商主播教练
+    department: marketing
+    file: marketing/product-sales/marketing-livestream-commerce-coach.md
+    status: active
+    capabilities: [livestream-commerce, host-training, conversion, merchandising]
+    produces: [livestream-playbook]
+
   - id: finance-financial-analyst
     name: 财务分析师
     department: finance
     file: finance/financial-analyst.md
-    description: 财务建模、3年预测、盈亏平衡
-    capabilities: [finance, financial-model, forecast, ltv-cac, unit-economics]
-    priority: 1
+    status: active
+    capabilities: [finance, financial-model, forecast, ltv-cac, unit-economics, pricing, cost-structure]
+    produces: [financial-model, unit-economics]
 
   - id: finance-fundraising
     name: 融资顾问
     department: finance
     file: finance/fundraising-advisor.md
-    description: 融资策略、投资人沟通、估值
-    capabilities: [fundraising, valuation, investor-relations, pitch-deck]
-    priority: 2
+    status: active
+    capabilities: [fundraising, valuation, investor-relations, pitch-deck, use-of-funds]
+    tools: [web_search]
+    produces: [fundraising-plan, valuation-analysis]
 
-  # ============ 组织部 ============
   - id: org-architect
     name: 组织架构师
     department: organization
     file: organization/org-architect.md
-    description: 团队架构、股权设计、治理结构
-    capabilities: [org-design, equity, governance, structure]
-    priority: 2
+    status: active
+    capabilities: [org-design, equity, governance, structure, role-definition]
+    produces: [organization-plan, equity-plan]
 
   - id: org-talent-planner
     name: 人才规划师
     department: organization
     file: organization/talent-planner.md
-    description: 招聘、人才策略、JD
-    capabilities: [hiring, talent, recruitment, jd]
-    priority: 2
+    status: active
+    capabilities: [hiring, talent, recruitment, compensation, culture, jd]
+    produces: [talent-plan, hiring-plan]
 
-  # ============ 风险部 ============
   - id: risk-manager
     name: 风险管理师
     department: risk
     file: risk/risk-manager.md
-    description: 风险识别、应对预案、合规
-    capabilities: [risk, compliance, mitigation, risk-matrix]
-    priority: 2
-
-<<<<<<< HEAD
-  # ============ 指挥层(创业规划专用,保留兼容) ============
-=======
-  # ============ 指挥层(兼容) ============
->>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
-  - id: director-startup
-    name: 创业总指挥(原)
-    department: _director
-    file: _director/director-startup.md
-<<<<<<< HEAD
-    description: 创业规划专用编排器(原 StartupPlanner 主入口)
-    capabilities: [startup, bp, planning, orchestration]
-    priority: 3
-    note: 建议使用 core-orchestrator 替代,此 agent 保留兼容
-=======
-    description: 创业规划专用编排器
-    capabilities: [startup, bp, planning, orchestration]
-    priority: 3
-    note: 建议使用 core-orchestrator 替代
->>>>>>> aa3d54d7cd53bd16643d6f3b74c5af70f7af8cfe
+    status: active
+    capabilities: [risk, compliance, mitigation, risk-matrix, regulatory, legal]
+    tools: [web_search]
+    produces: [risk-review, mitigation-plan]
 
   - id: director-bp
     name: BP 总编
     department: _director
     file: _director/director-bp.md
-    description: 商业计划书整合输出
-    capabilities: [bp-writing, document-integration]
-    priority: 3
+    status: active
+    capabilities: [bp-writing, document-integration, narrative-consistency, investor-communication]
+    produces: [business-plan]
+
+  - id: director-startup
+    name: 创业总指挥（兼容入口）
+    department: _director
+    file: _director/director-startup.md
+    status: deprecated
+    replacement: core-orchestrator
+    capabilities: [legacy-orchestration]
+    produces: []

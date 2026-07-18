@@ -1,53 +1,31 @@
-# 自定义工作流
+# 自定义工作流 v2
 
-当预设工作流不满足需求时,你可以**自己定义**协作流程。
+自定义流程必须遵循根目录 `AGENTS.md` 和现有 v2 工作流格式。
 
-## 使用方式
+## 最小模板
 
-### 方式 1:告诉 orchestrator 你的工作流
-```
-用户:"帮我做一个 X 任务,流程是:先 A,再同时 B 和 C,最后 D"
-
-Orchestrator:
-1. 解析工作流
-2. 识别每步对应的 agent
-3. 按依赖关系并行/串行执行
-```
-
-### 方式 2:写一个 YAML 工作流文件
-参考 templates/ 下其他 yaml 的格式,新建一个:
 ```yaml
+schema_version: "2.0"
 workflow:
-  id: my-custom-flow
-  name: 我的自定义流程
-  stages:
-    - stage: 步骤1
-      tasks:
-        - agent: {agent_id}
-          outputs: [...]
-    - stage: 步骤2
-      depends_on: [步骤1 的 task_id]
-      parallel: true
-      tasks: [...]
+  id: my-workflow
+  name: 我的工作流
+  version: "2.0"
+  goal: 可验证的最终目标
+  system_inputs: [project-brief]
+  final_artifacts: [final-artifact]
+  tasks:
+    - id: first-task
+      objective: 生成第一个可验收产物
+      agent: registered-agent-id
+      depends_on: []
+      requires: [project-brief]
+      produces: {id: first-artifact, type: report}
+      acceptance_criteria: [至少一条可客观检查的标准]
+      reviewer: core-quality-reviewer
+      retry: {max_attempts: 2}
+      failure_policy: block_dependents
 ```
 
-保存为 `templates/my-flow.yaml`,下次直接告诉 orchestrator "按 my-flow 跑"。
+不要手工声明一个阶段“并行”。运行时会根据 `depends_on` 自动找出所有 ready 任务并并行执行。
 
-### 方式 3:动态生成
-告诉 orchestrator "现在帮我设计一个适合 XX 场景的工作流",它会调用 `core-task-planner` 临时生成。
-
-## 简单规则
-
-- `parallel: true` 表示该 stage 内所有 task 并行执行
-- `depends_on` 列出前置 task_id
-- `optional: true` 表示该 task 失败不影响整体
-- `estimated_effort` 用于排期参考(trivial/small/medium/large)
-
-## 工作流模板库
-
-| 工作流 ID | 文件 | 适用场景 |
-|----------|------|----------|
-| software-dev | [software-dev.yaml](software-dev.yaml) | 软件开发 |
-| marketing-campaign | [marketing-campaign.yaml](marketing-campaign.yaml) | 营销活动 |
-| research-project | [research-project.yaml](research-project.yaml) | 综合调研 |
-| bp-planning | [bp-planning.yaml](bp-planning.yaml) | 商业计划书 |
+保存后检查依赖无环、产物唯一、审核独立，并用任一支持原生 Subagent 的宿主工具执行一次任务走查。
